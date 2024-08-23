@@ -1,0 +1,14 @@
+C:\Users\nbara\RiderProjects\Backgammon\Backgammon\bin\Debug\net8.0-windows\Backgammon.exe
+C:\Users\nbara\RiderProjects\Backgammon\Backgammon\bin\Debug\net8.0-windows\Backgammon.deps.json
+C:\Users\nbara\RiderProjects\Backgammon\Backgammon\bin\Debug\net8.0-windows\Backgammon.runtimeconfig.json
+C:\Users\nbara\RiderProjects\Backgammon\Backgammon\bin\Debug\net8.0-windows\Backgammon.dll
+C:\Users\nbara\RiderProjects\Backgammon\Backgammon\bin\Debug\net8.0-windows\Backgammon.pdb
+C:\Users\nbara\RiderProjects\Backgammon\Backgammon\obj\Debug\net8.0-windows\Backgammon.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\nbara\RiderProjects\Backgammon\Backgammon\obj\Debug\net8.0-windows\Backgammon.AssemblyInfoInputs.cache
+C:\Users\nbara\RiderProjects\Backgammon\Backgammon\obj\Debug\net8.0-windows\Backgammon.AssemblyInfo.cs
+C:\Users\nbara\RiderProjects\Backgammon\Backgammon\obj\Debug\net8.0-windows\Backgammon.csproj.CoreCompileInputs.cache
+C:\Users\nbara\RiderProjects\Backgammon\Backgammon\obj\Debug\net8.0-windows\Backgammon.dll
+C:\Users\nbara\RiderProjects\Backgammon\Backgammon\obj\Debug\net8.0-windows\refint\Backgammon.dll
+C:\Users\nbara\RiderProjects\Backgammon\Backgammon\obj\Debug\net8.0-windows\Backgammon.pdb
+C:\Users\nbara\RiderProjects\Backgammon\Backgammon\obj\Debug\net8.0-windows\Backgammon.genruntimeconfig.cache
+C:\Users\nbara\RiderProjects\Backgammon\Backgammon\obj\Debug\net8.0-windows\ref\Backgammon.dll
