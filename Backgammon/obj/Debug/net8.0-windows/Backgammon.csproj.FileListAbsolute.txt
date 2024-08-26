@@ -12,3 +12,4 @@ C:\Users\nbara\RiderProjects\Backgammon\Backgammon\obj\Debug\net8.0-windows\refi
 C:\Users\nbara\RiderProjects\Backgammon\Backgammon\obj\Debug\net8.0-windows\Backgammon.pdb
 C:\Users\nbara\RiderProjects\Backgammon\Backgammon\obj\Debug\net8.0-windows\Backgammon.genruntimeconfig.cache
 C:\Users\nbara\RiderProjects\Backgammon\Backgammon\obj\Debug\net8.0-windows\ref\Backgammon.dll
+C:\Users\nbara\RiderProjects\Backgammon\Backgammon\obj\Debug\net8.0-windows\Backgammon.sourcelink.json

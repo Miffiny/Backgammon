@@ -16,10 +16,12 @@ public partial class Window : Form
 
     private void InitializeBoard()
     {
+        var height = 800;
+        var width = 1000;
         // Initialize the PictureBox for the board
         boardPictureBox = new PictureBox
         {
-            Size = new Size(1000, 800),
+            Size = new Size(width, height),
             Location = new Point(50, 50),
             BorderStyle = BorderStyle.FixedSingle,
             SizeMode = PictureBoxSizeMode.StretchImage
@@ -35,7 +37,7 @@ public partial class Window : Form
     private void InitializePoints()
     {
         // Determine the size of each point PictureBox
-        Size pointSize = new Size(40, 200); // Adjust the size based on your image and layout
+        Size pointSize = new Size(74, 300); // Adjust the size based on your image and layout
         int gap = 10; // The gap between the points
 
         // Calculate the locations for the top row (12 points)
@@ -44,7 +46,7 @@ public partial class Window : Form
             points[i] = new PictureBox
             {
                 Size = pointSize,
-                Location = new Point(60 + i * (pointSize.Width + gap), 60), // Adjust the initial location (60, 60) based on your board
+                Location = new Point(0 + i * (pointSize.Width + gap), 0), // Adjust the initial location (60, 60) based on your board
                 BorderStyle = BorderStyle.None,
                 SizeMode = PictureBoxSizeMode.StretchImage,
                 BackColor = Color.Transparent, // Set background color to transparent
@@ -67,7 +69,7 @@ public partial class Window : Form
             points[i + 12] = new PictureBox
             {
                 Size = pointSize,
-                Location = new Point(60 + i * (pointSize.Width + gap), 600), // Adjust the initial location (600, 600) based on your board
+                Location = new Point(0 + i * (pointSize.Width + gap), 500), // Adjust the initial location (600, 600) based on your board
                 BorderStyle = BorderStyle.None,
                 SizeMode = PictureBoxSizeMode.StretchImage,
                 BackColor = Color.Transparent, // Set background color to transparent
