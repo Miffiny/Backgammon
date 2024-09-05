@@ -18,4 +18,8 @@
       <Folder Include="UI\images\" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Core\Core.csproj" />
+    </ItemGroup>
+
 </Project>

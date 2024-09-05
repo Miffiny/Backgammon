@@ -46,21 +46,21 @@ public partial class Window : Form
             points[i] = new PictureBox
             {
                 Size = pointSize,
-                Location = new Point(0 + i * (pointSize.Width + gap), 0), // Adjust the initial location (60, 60) based on your board
+                Location = new Point(0 + i * (pointSize.Width + gap), 0),
                 BorderStyle = BorderStyle.None,
                 SizeMode = PictureBoxSizeMode.StretchImage,
-                BackColor = Color.Transparent, // Set background color to transparent
-                Parent = boardPictureBox // Set the parent to the boardPictureBox
+                BackColor = Color.Transparent,
+                Parent = boardPictureBox
             };
 
-            // Load and flip the image vertically to mirror it
+            // Flip the points
             var pointImage = Image.FromFile(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"..\..\..\UI\images\point.png"));
             pointImage.RotateFlip(RotateFlipType.RotateNoneFlipY); // Flip the image vertically
             points[i].Image = pointImage;
 
-            // Add the point to the board (as a child of boardPictureBox)
+            // Add the point as child
             boardPictureBox.Controls.Add(points[i]);
-            points[i].BringToFront(); // Ensure point is in front of the board
+            points[i].BringToFront();
         }
 
         // Calculate the locations for the bottom row (12 points)
