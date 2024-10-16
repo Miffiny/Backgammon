@@ -15,7 +15,7 @@ public class GameBoard
     }
 
     // Method to move a checker from one point to another
-    public void MoveChecker(Player player, int fromIndex, int toIndex)
+    public void MoveChecker(Player currentPlayer, Player opponent, int fromIndex, int toIndex)
     {
         if (fromIndex < 1 || fromIndex > 24 || toIndex < 1 || toIndex > 24)
         {
@@ -29,17 +29,20 @@ public class GameBoard
         Checker checker = fromPoint.RemoveChecker();
 
         // Handle hitting an opponent's checker
-        if (toPoint.IsBlot(player.Color))
+        if (toPoint.IsBlot(currentPlayer.Color))
         {
             Checker hitChecker = toPoint.RemoveChecker();
             hitChecker.Position = -1; // Indicate that the checker is on the bar
-            player.HitChecker(hitChecker);
+
+            // Add the hit checker to the opponent's bar, not the current player’s
+            opponent.HitChecker(hitChecker);
         }
 
-        // Add the checker to the destination point
-        checker.Position = toIndex;
+        // Add the checker to the new point
         toPoint.AddChecker(checker);
+        checker.Position = toIndex;
     }
+
 
     // Method to check if a move is valid
     public bool IsMoveValid(Player player, int fromIndex, int toIndex, int diceRoll)
@@ -49,8 +52,10 @@ public class GameBoard
             return false; // Invalid indices
         }
 
-        Point fromPoint = Points[fromIndex - 1];
-        Point toPoint = Points[toIndex - 1];
+        var converted_from = fromIndex - 1;
+        var converted_to = toIndex - 1; 
+        Point fromPoint = Points[converted_from];
+        Point toPoint = Points[converted_to];
 
         // Check if the destination point is a valid move
         return fromPoint.Owner == player.Color &&

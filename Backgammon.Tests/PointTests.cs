@@ -23,7 +23,7 @@ public class PointTests
         {
             // Arrange
             Point point = new Point(1);
-            Checker checker = new Checker("Red", 1);
+            Checker checker = new Checker(CheckerColor.White, 1);
 
             // Act
             point.AddChecker(checker);
@@ -38,8 +38,8 @@ public class PointTests
         {
             // Arrange
             Point point = new Point(1);
-            Checker checker1 = new Checker("Red", 1);
-            Checker checker2 = new Checker("Red", 1);
+            Checker checker1 = new Checker(CheckerColor.White, 1);
+            Checker checker2 = new Checker(CheckerColor.White, 1);
             point.AddChecker(checker1);
             point.AddChecker(checker2);
 
@@ -71,7 +71,7 @@ public class PointTests
             Point point = new Point(1);
 
             // Act
-            string owner = point.Owner;
+            CheckerColor? owner = point.Owner;
 
             // Assert
             Assert.Null(owner);
@@ -82,14 +82,14 @@ public class PointTests
         {
             // Arrange
             Point point = new Point(1);
-            Checker checker = new Checker("Red", 1);
+            Checker checker = new Checker(CheckerColor.White, 1);
             point.AddChecker(checker);
 
             // Act
-            string owner = point.Owner;
+            CheckerColor? owner = point.Owner;
 
             // Assert
-            Assert.Equal("Red", owner);
+            Assert.Equal(CheckerColor.White, owner);
         }
 
         [Fact]
@@ -97,11 +97,11 @@ public class PointTests
         {
             // Arrange
             Point point = new Point(1);
-            Checker checker = new Checker("Red", 1);
+            Checker checker = new Checker(CheckerColor.White, 1);
             point.AddChecker(checker);
 
             // Act
-            bool isBlot = point.IsBlot("Blue");
+            bool isBlot = point.IsBlot(CheckerColor.Black);
 
             // Assert
             Assert.True(isBlot);
@@ -114,7 +114,7 @@ public class PointTests
             Point point = new Point(1);
 
             // Act
-            bool isBlot = point.IsBlot("Red");
+            bool isBlot = point.IsBlot(CheckerColor.White);
 
             // Assert
             Assert.False(isBlot);
@@ -125,11 +125,11 @@ public class PointTests
         {
             // Arrange
             Point point = new Point(1);
-            point.AddChecker(new Checker("Red", 1));
-            point.AddChecker(new Checker("Red", 1));
+            point.AddChecker(new Checker(CheckerColor.White, 1));
+            point.AddChecker(new Checker(CheckerColor.White, 1));
 
             // Act
-            bool isBlot = point.IsBlot("Blue");
+            bool isBlot = point.IsBlot(CheckerColor.Black);
 
             // Assert
             Assert.False(isBlot);
@@ -140,10 +140,10 @@ public class PointTests
         {
             // Arrange
             Point point = new Point(1);
-            point.AddChecker(new Checker("Red", 1));
+            point.AddChecker(new Checker(CheckerColor.White, 1));
 
             // Act
-            bool isBlot = point.IsBlot("Red");
+            bool isBlot = point.IsBlot(CheckerColor.White);
 
             // Assert
             Assert.False(isBlot);

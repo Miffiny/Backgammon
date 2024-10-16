@@ -2,15 +2,13 @@
 
 public class Player
 {
-    public string Name { get; private set; }  // The player's name or identifier
-    public string Color { get; private set; }  // The color representing the player's checkers
+    public CheckerColor Color { get; private set; }  // The color representing the player's checkers
     public List<Checker> Checkers { get; private set; }  // The player's checkers currently in play on the board
     public List<Checker> Bar { get; private set; }  // The player's checkers that have been hit and are on the bar
     public List<Checker> BearOff { get; private set; }  // The player's checkers that have been borne off the board
 
-    public Player(string name, string color)
+    public Player(CheckerColor color)
     {
-        Name = name;
         Color = color;
         Checkers = new List<Checker>();
         Bar = new List<Checker>();

@@ -2,8 +2,8 @@
 
 public class Dice
 {
-    public int Value1 { get; private set; }  // The result of the first die
-    public int Value2 { get; private set; }  // The result of the second die
+    public int Value1 { get;  set; }  // The result of the first die
+    public int Value2 { get;  set; }  // The result of the second die
     public bool IsDouble { get; private set; }  // Indicates if the roll is a double (both dice have the same value)
 
     private Random random;

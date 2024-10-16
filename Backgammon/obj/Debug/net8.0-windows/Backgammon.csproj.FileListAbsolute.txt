@@ -13,3 +13,10 @@ C:\Users\nbara\RiderProjects\Backgammon\Backgammon\obj\Debug\net8.0-windows\Back
 C:\Users\nbara\RiderProjects\Backgammon\Backgammon\obj\Debug\net8.0-windows\Backgammon.genruntimeconfig.cache
 C:\Users\nbara\RiderProjects\Backgammon\Backgammon\obj\Debug\net8.0-windows\ref\Backgammon.dll
 C:\Users\nbara\RiderProjects\Backgammon\Backgammon\obj\Debug\net8.0-windows\Backgammon.sourcelink.json
+C:\Users\nbara\RiderProjects\Backgammon\Backgammon\bin\Debug\net8.0-windows\Core.deps.json
+C:\Users\nbara\RiderProjects\Backgammon\Backgammon\bin\Debug\net8.0-windows\Core.runtimeconfig.json
+C:\Users\nbara\RiderProjects\Backgammon\Backgammon\bin\Debug\net8.0-windows\Core.exe
+C:\Users\nbara\RiderProjects\Backgammon\Backgammon\bin\Debug\net8.0-windows\Core.dll
+C:\Users\nbara\RiderProjects\Backgammon\Backgammon\bin\Debug\net8.0-windows\Core.pdb
+C:\Users\nbara\RiderProjects\Backgammon\Backgammon\obj\Debug\net8.0-windows\Backgammon.csproj.AssemblyReference.cache
+C:\Users\nbara\RiderProjects\Backgammon\Backgammon\obj\Debug\net8.0-windows\Backgammon.csproj.CopyComplete

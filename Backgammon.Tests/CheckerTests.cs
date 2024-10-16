@@ -7,7 +7,7 @@ public class CheckerTests
     public void CheckerInitialization_ShouldSetColorAndPosition()
     {
         // Arrange
-        string expectedColor = "Red";
+        CheckerColor expectedColor = CheckerColor.Black;
         int expectedPosition = 5;
 
         // Act
@@ -22,7 +22,7 @@ public class CheckerTests
     public void CheckerPosition_ShouldBeSettable()
     {
         // Arrange
-        Checker checker = new Checker("Red", 5);
+        Checker checker = new Checker(CheckerColor.White, 5);
         int newPosition = 10;
 
         // Act

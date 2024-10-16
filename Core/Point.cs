@@ -30,7 +30,7 @@ public class Point
     }
 
     // Property to get the owner of the point (null if empty, otherwise the color of the first checker)
-    public string Owner
+    public CheckerColor? Owner
     {
         get
         {
@@ -39,7 +39,7 @@ public class Point
     }
 
     // Property to check if the point is occupied by a single opponent's checker
-    public bool IsBlot(string playerColor)
+    public bool IsBlot(CheckerColor playerColor)
     {
         return Checkers.Count == 1 && Checkers[0].Color != playerColor;
     }
