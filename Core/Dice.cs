@@ -29,10 +29,7 @@ public class Dice
         {
             return new int[] { Value1, Value1, Value1, Value1 };
         }
-        else
-        {
-            return new int[] { Value1, Value2 };
-        }
+        return new int[] { Value1, Value2 };
     }
 
     // Method to check if there are any moves left based on the dice

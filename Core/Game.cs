@@ -59,11 +59,6 @@ public class Game
 
     public bool IsMoveValid(int fromIndex, int toIndex, int diceValue)
     {
-        if (fromIndex < 1 || fromIndex > 24 || toIndex < 1 || toIndex > 24)
-        {
-            return false; // Out of bounds
-        }
-
         Point fromPoint = Board.Points[fromIndex - 1];
         Point toPoint = Board.Points[toIndex - 1];
 

@@ -1,0 +1,73 @@
+﻿<Window x:Class="Backgammon_UI.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Backgammon" Height="600" Width="800">
+    <Grid Margin="50">
+        <!-- Define the board area -->
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="7*" /> <!-- Board takes 70% of window width -->
+            <ColumnDefinition Width="3*" /> <!-- Remaining space for other UI elements -->
+        </Grid.ColumnDefinitions>
+
+        <!-- Board Layout -->
+        <Grid Grid.Column="0" Background="Tan" Margin="10" Name="GameBoard">
+            <!-- Define the rows for the board -->
+            <Grid.RowDefinitions>
+                <RowDefinition Height="4*" /> <!-- Top row -->
+                <RowDefinition Height="1*" /> <!-- Bar row -->
+                <RowDefinition Height="4*" /> <!-- Bottom row -->
+            </Grid.RowDefinitions>
+
+            <!-- Top Row: Points 13 to 24 -->
+            <UniformGrid Grid.Row="0" Columns="12" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                <StackPanel Name="Point_13" Orientation="Vertical" Background="SaddleBrown" />
+                <StackPanel Name="Point_14" Orientation="Vertical" Background="SaddleBrown" />
+                <StackPanel Name="Point_15" Orientation="Vertical" Background="SaddleBrown" />
+                <StackPanel Name="Point_16" Orientation="Vertical" Background="SaddleBrown" />
+                <StackPanel Name="Point_17" Orientation="Vertical" Background="SaddleBrown" />
+                <StackPanel Name="Point_18" Orientation="Vertical" Background="SaddleBrown" />
+                <StackPanel Name="Point_19" Orientation="Vertical" Background="SaddleBrown" />
+                <StackPanel Name="Point_20" Orientation="Vertical" Background="SaddleBrown" />
+                <StackPanel Name="Point_21" Orientation="Vertical" Background="SaddleBrown" />
+                <StackPanel Name="Point_22" Orientation="Vertical" Background="SaddleBrown" />
+                <StackPanel Name="Point_23" Orientation="Vertical" Background="SaddleBrown" />
+                <StackPanel Name="Point_24" Orientation="Vertical" Background="SaddleBrown" />
+            </UniformGrid>
+
+            <!-- Bar Row -->
+            <UniformGrid Grid.Row="1" Columns="8" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                <StackPanel Name="BarSlot_1" Orientation="Vertical" Background="BurlyWood" />
+                <StackPanel Name="BarSlot_2" Orientation="Vertical" Background="BurlyWood" />
+                <StackPanel Name="BarSlot_3" Orientation="Vertical" Background="BurlyWood" />
+                <StackPanel Name="BarSlot_4" Orientation="Vertical" Background="BurlyWood" />
+                <StackPanel Name="BarSlot_5" Orientation="Vertical" Background="BurlyWood" />
+                <StackPanel Name="BarSlot_6" Orientation="Vertical" Background="BurlyWood" />
+                <StackPanel Name="BarSlot_7" Orientation="Vertical" Background="BurlyWood" />
+                <StackPanel Name="BarSlot_8" Orientation="Vertical" Background="BurlyWood" />
+            </UniformGrid>
+
+            <!-- Bottom Row: Points 1 to 12 -->
+            <UniformGrid Grid.Row="2" Columns="12" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                <StackPanel Name="Point_12" Orientation="Vertical" Background="SaddleBrown" />
+                <StackPanel Name="Point_11" Orientation="Vertical" Background="SaddleBrown" />
+                <StackPanel Name="Point_10" Orientation="Vertical" Background="SaddleBrown" />
+                <StackPanel Name="Point_9" Orientation="Vertical" Background="SaddleBrown" />
+                <StackPanel Name="Point_8" Orientation="Vertical" Background="SaddleBrown" />
+                <StackPanel Name="Point_7" Orientation="Vertical" Background="SaddleBrown" />
+                <StackPanel Name="Point_6" Orientation="Vertical" Background="SaddleBrown" />
+                <StackPanel Name="Point_5" Orientation="Vertical" Background="SaddleBrown" />
+                <StackPanel Name="Point_4" Orientation="Vertical" Background="SaddleBrown" />
+                <StackPanel Name="Point_3" Orientation="Vertical" Background="SaddleBrown" />
+                <StackPanel Name="Point_2" Orientation="Vertical" Background="SaddleBrown" />
+                <StackPanel Name="Point_1" Orientation="Vertical" Background="SaddleBrown" />
+            </UniformGrid>
+        </Grid>
+
+        <!-- Side Panel for Dice and Player Info -->
+        <StackPanel Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="10">
+            <TextBlock Name="Dice1" Text="Dice 1: -" FontSize="18" Margin="5" />
+            <TextBlock Name="Dice2" Text="Dice 2: -" FontSize="18" Margin="5" />
+            <TextBlock Name="CurrentPlayer" Text="Current Player: -" FontSize="18" Margin="5" />
+        </StackPanel>
+    </Grid>
+</Window>
