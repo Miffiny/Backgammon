@@ -35,7 +35,7 @@
             </UniformGrid>
 
             <!-- Bar Row -->
-            <UniformGrid Grid.Row="1" Columns="8" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <UniformGrid Grid.Row="1" Columns="12" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                 <StackPanel Name="BarSlot_1" Orientation="Vertical" Background="BurlyWood" />
                 <StackPanel Name="BarSlot_2" Orientation="Vertical" Background="BurlyWood" />
                 <StackPanel Name="BarSlot_3" Orientation="Vertical" Background="BurlyWood" />
@@ -44,6 +44,10 @@
                 <StackPanel Name="BarSlot_6" Orientation="Vertical" Background="BurlyWood" />
                 <StackPanel Name="BarSlot_7" Orientation="Vertical" Background="BurlyWood" />
                 <StackPanel Name="BarSlot_8" Orientation="Vertical" Background="BurlyWood" />
+                <StackPanel Name="BarSlot_9" Orientation="Vertical" Background="BurlyWood" />
+                <StackPanel Name="BarSlot_10" Orientation="Vertical" Background="BurlyWood" />
+                <StackPanel Name="BarSlot_11" Orientation="Vertical" Background="BurlyWood" />
+                <StackPanel Name="BarSlot_12" Orientation="Vertical" Background="BurlyWood" />
             </UniformGrid>
 
             <!-- Bottom Row: Points 1 to 12 -->
@@ -62,12 +66,25 @@
                 <StackPanel Name="Point_1" Orientation="Vertical" Background="SaddleBrown" />
             </UniformGrid>
         </Grid>
-
+        
         <!-- Side Panel for Dice and Player Info -->
         <StackPanel Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="10">
             <TextBlock Name="Dice1" Text="Dice 1: -" FontSize="18" Margin="5" />
             <TextBlock Name="Dice2" Text="Dice 2: -" FontSize="18" Margin="5" />
             <TextBlock Name="CurrentPlayer" Text="Current Player: -" FontSize="18" Margin="5" />
+            
+            <!-- Roll Dice Button -->
+            <Button Name="RollDiceButton" Content="Roll Dice" FontSize="16" Margin="5" Width="100" Click="RollDiceButton_Click" />
+            
+            <!-- New Game Button -->
+            <Button Name="NewGameButton" Content="New Game" FontSize="16" Margin="5" Width="100" Click="NewGameButton_Click" />
+            
+            <!-- Bear Off Zones -->
+            <TextBlock Text="White Bear Off Zone" FontSize="16" Margin="5" />
+            <StackPanel Name="WhiteBearOffZone" Orientation="Horizontal" Background="LightGray" Margin="5" Height="50" MouseLeftButtonDown="WhiteBearOffZone_Click" />
+
+            <TextBlock Text="Black Bear Off Zone" FontSize="16" Margin="5" />
+            <StackPanel Name="BlackBearOffZone" Orientation="Horizontal" Background="LightGray" Margin="5" Height="50" MouseLeftButtonDown="BlackBearOffZone_Click" />
         </StackPanel>
     </Grid>
 </Window>

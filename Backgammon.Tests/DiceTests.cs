@@ -1,4 +1,6 @@
-﻿namespace Backgammon.Tests;
+﻿using Xunit;
+
+namespace Backgammon.Tests;
 
 using Core;
 

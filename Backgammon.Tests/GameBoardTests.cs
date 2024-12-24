@@ -1,4 +1,7 @@
-﻿using Core;
+﻿using System.Linq;
+using Core;
+using Xunit;
+
 namespace Backgammon.Tests;
 public class GameBoardTests
 {

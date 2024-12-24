@@ -61,35 +61,94 @@ public class UIUpdater
         }
 
         // Populate bar slots
-        var barCheckers = game.Players[0].Bar.Concat(game.Players[1].Bar).ToList();
-        for (int i = 0; i < barCheckers.Count; i++)
+        var whiteBarCheckers = game.Players[0].Bar; // White player checkers (1-6)
+        var blackBarCheckers = game.Players[1].Bar; // Black player checkers (7-12)
+
+// Populate white player's bar slots (1-6)
+        for (int i = 0; i < whiteBarCheckers.Count; i++)
         {
             var barSlotUI = gameBoard.FindName($"BarSlot_{i + 1}") as StackPanel;
             if (barSlotUI != null)
             {
-                double checkerSize = barSlotUI.ActualWidth * 0.7; // Calculate size dynamically
-
-                var checker = barCheckers[i];
+                double checkerSize = barSlotUI.ActualWidth * 0.4; // Calculate size dynamically
+        
                 var checkerUI = new Ellipse
                 {
                     Width = checkerSize,
                     Height = checkerSize, // Height equals width
-                    Fill = checker.Color == CheckerColor.White ? Brushes.White : Brushes.Black,
-                    Margin = new Thickness(2)
+                    Fill = Brushes.White, // White checkers
+                    HorizontalAlignment = HorizontalAlignment.Center,
+                    VerticalAlignment = VerticalAlignment.Center
+                };
+                barSlotUI.Children.Add(checkerUI);
+            }
+        }
+
+// Populate black player's bar slots (7-12)
+        for (int i = 0; i < blackBarCheckers.Count; i++)
+        {
+            var barSlotUI = gameBoard.FindName($"BarSlot_{i + 7}") as StackPanel;
+            if (barSlotUI != null)
+            {
+                double checkerSize = barSlotUI.ActualWidth * 0.4; // Calculate size dynamically
+        
+                var checkerUI = new Ellipse
+                {
+                    Width = checkerSize,
+                    Height = checkerSize, // Height equals width
+                    Fill = Brushes.Black, // Black checkers
+                    HorizontalAlignment = HorizontalAlignment.Center,
+                    VerticalAlignment = VerticalAlignment.Center
                 };
                 barSlotUI.Children.Add(checkerUI);
             }
         }
     }
+    
+    
+    public void UpdateBearOffZones(Game game, Panel whiteBearOffZone, Panel blackBearOffZone)
+    {
+        // Clear existing children in bear off zones
+        whiteBearOffZone.Children.Clear();
+        blackBearOffZone.Children.Clear();
+
+        // Render white checkers in the bear off zone
+        double whiteCheckerSize = whiteBearOffZone.ActualHeight * 0.9;
+        for (int i = 0; i < game.Players[0].BearOff.Count; i++)
+        {
+            var checkerUI = new Ellipse
+            {
+                Width = whiteCheckerSize,
+                Height = whiteCheckerSize,
+                Fill = Brushes.White,
+                Margin = new Thickness(-whiteCheckerSize / 2, 0, 0, 0) // Overlap checkers by half
+            };
+            whiteBearOffZone.Children.Add(checkerUI);
+        }
+
+        // Render black checkers in the bear off zone
+        double blackCheckerSize = blackBearOffZone.ActualHeight * 0.9;
+        for (int i = 0; i < game.Players[1].BearOff.Count; i++)
+        {
+            var checkerUI = new Ellipse
+            {
+                Width = blackCheckerSize,
+                Height = blackCheckerSize,
+                Fill = Brushes.Black,
+                Margin = new Thickness(-blackCheckerSize / 2, 0, 0, 0) // Overlap checkers by half
+            };
+            blackBearOffZone.Children.Add(checkerUI);
+        }
+    }
 
     public void UpdateDice(Game game, TextBlock dice1, TextBlock dice2)
     {
-        dice1.Text = game.Dice.Value1.ToString();
-        dice2.Text = game.Dice.Value2.ToString();
+        dice1.Text = $"Dice 1 value: {game.Dice.Value1.ToString()}";
+        dice2.Text = $"Dice 2 value: {game.Dice.Value2.ToString()}";
     }
 
     public void UpdateCurrentPlayer(Game game, TextBlock currentPlayer)
     {
-        currentPlayer.Text = $"Player: {game.CurrentPlayer.Color}";
+        currentPlayer.Text = $"Current player: {game.CurrentPlayer.Color}";
     }
 }

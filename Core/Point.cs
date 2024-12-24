@@ -26,7 +26,7 @@ public class Point
             Checkers.RemoveAt(Checkers.Count - 1);
             return checker;
         }
-        return null;
+        return null!;
     }
 
     // Property to get the owner of the point (null if empty, otherwise the color of the first checker)

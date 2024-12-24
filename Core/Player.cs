@@ -24,7 +24,7 @@ public class Player
             Bar.RemoveAt(Bar.Count - 1);
             return checker;
         }
-        return null;
+        return null!;
     }
 
     // Method to bear off a checker
