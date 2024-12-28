@@ -29,7 +29,7 @@ public class UIUpdater
             }
         }
 
-        for (int i = 1; i <= 8; i++)
+        for (int i = 1; i <= 12; i++)
         {
             var barSlotUI = gameBoard.FindName($"BarSlot_{i}") as StackPanel;
             if (barSlotUI != null)

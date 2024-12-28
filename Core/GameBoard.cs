@@ -13,6 +13,26 @@ public class GameBoard
             Points[i] = new Point(i + 1);
         }
     }
+    
+    public GameBoard Clone()
+    {
+        // Create a new GameBoard instance
+        GameBoard clonedBoard = new GameBoard();
+
+        // Clone each point on the board
+        for (int i = 0; i < Points.Length; i++)
+        {
+            clonedBoard.Points[i] = new Point(Points[i].Index);
+
+            // Clone each checker on the point
+            foreach (var checker in Points[i].Checkers)
+            {
+                clonedBoard.Points[i].AddChecker(new Checker(checker.Color, checker.Position));
+            }
+        }
+
+        return clonedBoard;
+    }
 
     // Method to move a checker from one point to another
     public void MoveChecker(Player currentPlayer, Player opponent, int fromIndex, int toIndex)

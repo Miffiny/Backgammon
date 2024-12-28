@@ -59,6 +59,8 @@ public class Game
 
     public bool IsMoveValid(int fromIndex, int toIndex, int diceValue)
     {
+        if (fromIndex != 0 && CurrentPlayer.Bar.Count > 0) return false;
+        
         // If checker is on the bar, player can only re-enter in the opponent's home board
         if (CurrentPlayer.Bar.Count > 0)
         {
@@ -75,6 +77,8 @@ public class Game
         }
         
         return Board.IsMoveValid(CurrentPlayer, fromIndex, toIndex, diceValue);
+
+        return GameUtils.IsMoveValid(fromIndex, toIndex, diceValue, CurrentPlayer, Board);
     }
     
     public bool HasAvailableMoves()
