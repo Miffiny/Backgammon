@@ -6,10 +6,12 @@ public class Game
     public Player CurrentPlayer { get; private set; }
     public Dice Dice { get; private set; }
     public GameBoard Board { get; private set; }
+    public int depth;
     public bool IsGameOver { get; private set; }
     private int currentPlayerIndex;
     
-    private AI.AI _ai; // Add an AI instance
+    private AI.AI _blackAI; // Add an AI instance
+    private AI.AI _whiteAI; // Add an AI instance
 
     public Game()
     {
@@ -24,11 +26,12 @@ public class Game
         currentPlayerIndex = 0;
         CurrentPlayer = Players[currentPlayerIndex];
         IsGameOver = false;
+        depth = 0;
         
         InitializeCheckers();  // Call the method to initialize checkers
         
-        // Initialize AI for the current player (optional: adjust dynamically later)
-        _ai = new AI.AI(CurrentPlayer, Board, Players);
+        _whiteAI = new AI.AI(GetOpponent(), Board, Players);
+        _blackAI = new AI.AI(GetOpponent(), Board, Players);
     }
 
     // Method to initialize checkers on the board
@@ -62,11 +65,56 @@ public class Game
         Dice.Roll();
     }
     
-    public List<(int From, int To)> GetBestMoveForCurrentPlayer(int depth)
+    public List<(int From, int To)> GetBestMoveForCurrentPlayer()
     {
         int[] diceValues = Dice.GetDiceValues(); // Get the current dice values
-        return _ai.GetBestMove(diceValues, depth); // Call AI to get the best move sequence
+
+        // Determine which AI instance to use based on the current player's color
+        AI.AI currentAI = (CurrentPlayer.Color == CheckerColor.White) ? _whiteAI : _blackAI;
+
+        // Call AI to get the best move sequence
+        return currentAI.GetBestMove(diceValues, depth);
     }
+    
+    public void ExecuteAIMoves(List<(int From, int To)> moves)
+    {
+        foreach (var move in moves)
+        {
+            int fromIndex = move.From;
+            int toIndex = move.To;
+
+            if (fromIndex == 0) // Move from the bar
+            {
+                foreach (int diceValue in Dice.GetDiceValues())
+                {
+                    if (IsValidBarMove(toIndex, diceValue))
+                    {
+                        MakeMove(fromIndex, toIndex);
+                        break;
+                    }
+                }
+            }
+            else if (toIndex == -1) // Bear off
+            {
+                if (CanBearOffFromIndex(fromIndex))
+                {
+                    BearOffChecker(fromIndex);
+                }
+            }
+            else // Regular move
+            {
+                foreach (int diceValue in Dice.GetDiceValues())
+                {
+                    if (IsMoveValid(fromIndex, toIndex, diceValue))
+                    {
+                        MakeMove(fromIndex, toIndex);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
 
     public bool IsMoveValid(int fromIndex, int toIndex, int diceValue)
     {
@@ -78,7 +126,7 @@ public class Game
         int[] diceValues = Dice.GetDiceValues();
 
         // Check moves from the bar
-        if (CurrentPlayer.Bar.Count > 0)
+        if (Board.GetBar(CurrentPlayer.Color).Count > 0)
         {
             foreach (int diceValue in diceValues)
             {
@@ -209,15 +257,15 @@ public class Game
                     if (IsValidBarMove(toIndex, diceValue))
                     {
                         Point toPoint = Board.Points[toIndex - 1];
-                        Checker checker = CurrentPlayer.ReEnterFromBar();
+                        Checker checker = Board.RemoveFromBar(CurrentPlayer.Color);
                         // Handle hitting an opponent's checker
                         if (toPoint.IsBlot(Players[currentPlayerIndex].Color))
                         {
                             Checker hitChecker = toPoint.RemoveChecker();
-                            hitChecker.Position = -1; // Indicate that the checker is on the bar
+                            hitChecker.Position = 0; // Indicate that the checker is on the bar
 
                             // Add the hit checker to the opponent's bar, not the current player’s
-                            GetOpponent().HitChecker(hitChecker);
+                            Board.AddToBar(hitChecker);
                         }
                         Board.Points[toIndex - 1].AddChecker(checker);
                         checker.Position = toIndex;
@@ -412,12 +460,37 @@ public class Game
 
     public void CheckForWinner()
     {
-        if (CurrentPlayer.BearOff.Count == 15)
+        // Check if all checkers of the current player are borne off
+        bool allCheckersOffBoard = true;
+
+        // Verify no checkers exist on the board
+        foreach (var point in Board.Points)
+        {
+            if (point.Owner == CurrentPlayer.Color)
+            {
+                allCheckersOffBoard = false;
+                break;
+            }
+        }
+
+        // Verify no checkers exist on the bar
+        if (allCheckersOffBoard)
+        {
+            var playerBar = CurrentPlayer.Color == CheckerColor.White ? Board.WhiteBar : Board.BlackBar;
+            if (playerBar.Count > 0)
+            {
+                allCheckersOffBoard = false;
+            }
+        }
+
+        // Declare winner if no checkers are on the board or bar
+        if (allCheckersOffBoard)
         {
             IsGameOver = true;
             Console.WriteLine($"{CurrentPlayer.Color} player has won the game!");
         }
     }
+
 
     public void EndTurn()
     {
@@ -433,7 +506,7 @@ public class Game
         }
     }
 
-    private void SwitchTurn()
+    public void SwitchTurn()
     {
         currentPlayerIndex = (currentPlayerIndex == 0) ? 1 : 0;
         CurrentPlayer = Players[currentPlayerIndex];

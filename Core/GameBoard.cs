@@ -18,30 +18,74 @@ public class GameBoard
         BlackBar = new List<Checker>();
     }
     
-    public GameBoard Clone(Player[] players)
+    public GameBoard Clone()
     {
         // Create a new GameBoard instance
-        GameBoard clonedBoard = new GameBoard();
+        var clonedBoard = new GameBoard();
 
-        // Clear all points in the cloned board
-        foreach (var point in clonedBoard.Points)
+        // Clone all points and their checkers
+        for (int i = 0; i < Points.Length; i++)
         {
-            point.Checkers.Clear();
-        }
+            var originalPoint = Points[i];
+            var clonedPoint = clonedBoard.Points[i];
 
-        // Populate the cloned board using the players' checkers
-        foreach (var player in players)
-        {
-            foreach (var checker in player.Checkers)
+            foreach (var checker in originalPoint.Checkers)
             {
-                if (checker.Position > 0) // Ensure the checker is on the board
-                {
-                    clonedBoard.Points[checker.Position - 1].AddChecker(checker);
-                }
+                // Create a new checker with the same properties
+                var clonedChecker = new Checker(checker.Color, checker.Position);
+                clonedPoint.AddChecker(clonedChecker);
             }
         }
 
+        // Clone the bars
+        foreach (var checker in WhiteBar)
+        {
+            clonedBoard.WhiteBar.Add(new Checker(checker.Color, checker.Position));
+        }
+        foreach (var checker in BlackBar)
+        {
+            clonedBoard.BlackBar.Add(new Checker(checker.Color, checker.Position));
+        }
+
         return clonedBoard;
+    }
+    
+    // Add a checker to the respective bar
+    public void AddToBar(Checker checker)
+    {
+        if (checker.Color == CheckerColor.White)
+        {
+            WhiteBar.Add(checker);
+        }
+        else
+        {
+            BlackBar.Add(checker);
+        }
+        checker.Position = 0; // Position 0 indicates the bar
+    }
+
+    // Remove a checker from the respective bar
+    public Checker RemoveFromBar(CheckerColor color)
+    {
+        if (color == CheckerColor.White && WhiteBar.Count > 0)
+        {
+            var checker = WhiteBar[WhiteBar.Count - 1];
+            WhiteBar.RemoveAt(WhiteBar.Count - 1);
+            return checker;
+        }
+        else if (color == CheckerColor.Black && BlackBar.Count > 0)
+        {
+            var checker = BlackBar[BlackBar.Count - 1];
+            BlackBar.RemoveAt(BlackBar.Count - 1);
+            return checker;
+        }
+        return null!;
+    }
+
+    // Get bar contents for a specific color
+    public List<Checker> GetBar(CheckerColor color)
+    {
+        return color == CheckerColor.White ? WhiteBar : BlackBar;
     }
 
     // Method to move a checker from one point to another
@@ -62,10 +106,10 @@ public class GameBoard
         if (toPoint.IsBlot(currentPlayer.Color))
         {
             Checker hitChecker = toPoint.RemoveChecker();
-            hitChecker.Position = -1; // Indicate that the checker is on the bar
+            hitChecker.Position = 0; // Indicate that the checker is on the bar
 
             // Add the hit checker to the opponent's bar, not the current player’s
-            opponent.HitChecker(hitChecker);
+            AddToBar(hitChecker);
         }
 
         // Add the checker to the new point

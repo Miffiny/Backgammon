@@ -2,9 +2,9 @@
 
 public class AI
 {
-    private Player _aiPlayer;
-    private GameBoard _board;
-    private Player[] _players;
+    private readonly Player _aiPlayer;
+    private readonly GameBoard _board;
+    private readonly Player[] _players;
     private Dictionary<string, List<(int From, int To)>> stateToMoves;
 
     public AI(Player aiPlayer, GameBoard board, Player[] players)
@@ -26,17 +26,18 @@ public class AI
         
         foreach (var state in uniqueStates)
         {
-            int score = 0;
             // Use ExpectMiniMax to evaluate each state
-            score = ExpectMiniMax(state, depth, false, _aiPlayer);
+            int score = ExpectMiniMax(state, depth, false, _aiPlayer);
             if (score > bestScore)
             {
-
+                Console.WriteLine("Found better option, current count of states is");
+                Console.WriteLine(stateToMoves.Count);
                 bestScore = score;
                 bestMoveSequence = RetrieveMoveSequence(state);
             }
         }
-
+        Console.WriteLine("Total count of unique end states");
+        Console.WriteLine(stateToMoves.Count);
         return bestMoveSequence;
     }
 
@@ -45,8 +46,6 @@ public class AI
         // Base case: evaluate the board if maximum depth is reached
         if (depth == 0)
         {
-            int curScore = EvaluateBoard(currentPlayer, board);
-            if (curScore > 400) Console.WriteLine(curScore);
             return EvaluateBoard(currentPlayer, board);
         }
 
@@ -123,10 +122,6 @@ public class AI
 
         // Add checkers on the bar for black
         blackDistance += board.BlackBar.Count * 25;
-        Console.WriteLine("Black distance: ");
-        Console.WriteLine(blackDistance);
-        Console.WriteLine("White distance: ");
-        Console.WriteLine(whiteDistance);
         // Return the difference based on the current player's perspective
         if (currentPlayer.Color == CheckerColor.White) return whiteDistance - blackDistance; // Maximize for white
         return blackDistance - whiteDistance; // Maximize for black
@@ -226,7 +221,7 @@ public class AI
             foreach (var move in moves)
             {
                 var simulatedBoard = SimulateMove(currentBoard, currentPlayer, move.From, move.To);
-                var newDiceValues = RemoveUsedDie(remainingDice, Math.Abs(move.From - move.To));
+                var newDiceValues = RemoveUsedDie(remainingDice, move.From, move.To, currentPlayer.Color);
 
                 var newMoves = new List<(int From, int To)>(currentMoves) { move };
                 string stateHash = HashBoardState(simulatedBoard);
@@ -254,19 +249,8 @@ public class AI
         return uniqueStates;
     }
 
-
-    
-
-    // Utility: Remove the used die from the remaining dice values
-    private static int[] RemoveUsedDie(int[] diceValues, int usedValue)
-    {
-        var newDiceValues = new List<int>(diceValues);
-        newDiceValues.Remove(usedValue);
-        return newDiceValues.ToArray();
-    }
-
     // Utility: Hash the board state for efficient uniqueness checking
-    private static string HashBoardState(GameBoard board)
+    private string HashBoardState(GameBoard board)
     {
         var hashComponents = new List<string>();
         foreach (var point in board.Points)
@@ -282,26 +266,20 @@ public class AI
     
     private GameBoard SimulateMove(GameBoard board, Player currentPlayer, int src, int dst)
     {
-        // Clone players to ensure independence
-        Player[] clonedPlayers = _players.Select(p => p.Clone()).ToArray();
-
         // Clone the board with cloned players
-        GameBoard simulatedBoard = board.Clone(clonedPlayers);
-
-        Player clonedCurrentPlayer = clonedPlayers.First(p => p.Color == currentPlayer.Color);
-        Player clonedOpponent = clonedPlayers.First(p => p.Color != currentPlayer.Color);
+        GameBoard simulatedBoard = board.Clone();
 
         // Handle re-entering from the bar
         if (src == 0)
         {
-            Checker checker = board.RemoveFromBar(currentPlayer.Color);
+            Checker checker = simulatedBoard.RemoveFromBar(currentPlayer.Color);
             simulatedBoard.Points[dst - 1].AddChecker(checker);
             checker.Position = dst;
         }
         else if (dst == -1)
         {
             Checker checker = simulatedBoard.Points[src - 1].RemoveChecker();
-            clonedCurrentPlayer.BearOffChecker(checker);
+            currentPlayer.BearOffChecker(checker);
         }
         else
         {
@@ -310,7 +288,7 @@ public class AI
 
             Checker checker = fromPoint.RemoveChecker();
 
-            if (toPoint.IsBlot(clonedCurrentPlayer.Color))
+            if (toPoint.IsBlot(currentPlayer.Color))
             {
                 Checker opponentChecker = toPoint.RemoveChecker();
                 opponentChecker.Position = 0;
@@ -354,6 +332,41 @@ public class AI
             }
         }
         return outcomes;
+    }
+    
+    private int[] RemoveUsedDie(int[] diceValues, int src, int dst, CheckerColor color)
+    {
+        int diceValue;
+
+        if (src == 0) // Re-entering from the bar
+        {
+            if (color == CheckerColor.White)
+            {
+                diceValue = dst; // White uses dice values directly matching the destination
+            }
+            else // Black
+            {
+                diceValue = 25 - dst; // Black uses 25 - destination to calculate the dice value
+            }
+        }
+        else
+        {
+            diceValue = Math.Abs(dst - src); // Regular moves use absolute difference
+        }
+
+        // Remove the used dice value
+        var newDiceValues = new List<int>(diceValues);
+        while(true)
+        {
+            if (newDiceValues.Contains(diceValue))
+            {
+                newDiceValues.Remove(diceValue);
+                continue;
+            }
+            break;
+        }
+
+        return newDiceValues.ToArray();
     }
 
 }

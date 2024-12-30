@@ -76,6 +76,28 @@
             <!-- Roll Dice Button -->
             <Button Name="RollDiceButton" Content="Roll Dice" FontSize="16" Margin="5" Width="100" Click="RollDiceButton_Click" />
             
+            <!-- Game Configuration -->
+            <TextBlock Text="Select Game Mode:" FontSize="16" Margin="5" />
+            <ComboBox Name="GameModeComboBox" Margin="5">
+                <ComboBoxItem Content="Player vs Player" />
+                <ComboBoxItem Content="Player vs AI" />
+                <ComboBoxItem Content="AI vs AI" />
+            </ComboBox>
+
+            <TextBlock Text="Select Side:" FontSize="16" Margin="5" />
+            <ComboBox Name="PlayerSideComboBox" Margin="5">
+                <ComboBoxItem Content="White" />
+                <ComboBoxItem Content="Black" />
+                <ComboBoxItem Content="Random" />
+            </ComboBox>
+
+            <TextBlock Text="Select AI Depth:" FontSize="16" Margin="5" />
+            <ComboBox Name="AIDepthComboBox" Margin="5">
+                <ComboBoxItem Content="0" />
+                <ComboBoxItem Content="1" />
+                <ComboBoxItem Content="2" />
+            </ComboBox>
+            
             <!-- New Game Button -->
             <Button Name="NewGameButton" Content="New Game" FontSize="16" Margin="5" Width="100" Click="NewGameButton_Click" />
             

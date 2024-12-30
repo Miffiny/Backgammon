@@ -41,13 +41,20 @@ namespace Backgammon_UI
             // Subscribe to game updates
             _gameController.OnGameUpdated += UpdateUI;
 
-            StartNewGame();
+            StartNewGame(0,0,0);
         }
 
-        public void StartNewGame()
+        public void StartNewGame(int mode, int playerColor, int depth)
         {
-            _gameController.NewGame();
+            // Convert integers to appropriate types
+            CheckerColor color = (playerColor == 0) ? CheckerColor.White : CheckerColor.Black;
+            // Configure the game in the GameController
+            _gameController.ConfigureNewGame(mode, color, depth);
+
+            // Update the UI to reflect the new game state
+            UpdateUI();
         }
+
 
         public void RollDice()
         {

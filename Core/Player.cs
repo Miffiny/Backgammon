@@ -4,31 +4,15 @@ public class Player
 {
     public CheckerColor Color { get; private set; }  // The color representing the player's checkers
     public List<Checker> Checkers { get; private set; }  // The player's checkers currently in play on the board
-    public List<Checker> Bar { get; private set; }  // The player's checkers that have been hit and are on the bar
-    public List<Checker> BearOff { get; private set; }  // The player's checkers that have been borne off the board
 
     public Player(CheckerColor color)
     {
         Color = color;
         Checkers = new List<Checker>();
-        Bar = new List<Checker>();
-        BearOff = new List<Checker>();
     }
-    
-    public Player Clone()
-    {
-        var clonedPlayer = new Player(this.Color)
-        {
-            Checkers = new List<Checker>(this.Checkers.Select(c => new Checker(c.Color, c.Position))),
-            Bar = new List<Checker>(this.Bar.Select(c => new Checker(c.Color, c.Position))),
-            BearOff = new List<Checker>(this.BearOff.Select(c => new Checker(c.Color, c.Position)))
-        };
-
-        return clonedPlayer;
-    }
-
 
     // Method to move a checker from the bar back onto the board
+    /*
     public Checker ReEnterFromBar()
     {
         if (Bar.Count > 0)
@@ -38,21 +22,22 @@ public class Player
             return checker;
         }
         return null!;
-    }
+    }*/
 
     // Method to bear off a checker
     public void BearOffChecker(Checker checker)
     {
         Checkers.Remove(checker);
-        BearOff.Add(checker);
     }
 
     // Method to add a checker to the bar
+    /*
     public void HitChecker(Checker checker)
     {
         Checkers.Remove(checker);
         Bar.Add(checker);
     }
+    */
 
     // Method to add a checker to the player's list of checkers
     public void AddChecker(Checker checker)

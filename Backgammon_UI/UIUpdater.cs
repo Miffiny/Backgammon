@@ -61,8 +61,8 @@ public class UIUpdater
         }
 
         // Populate bar slots
-        var whiteBarCheckers = game.Players[0].Bar; // White player checkers (1-6)
-        var blackBarCheckers = game.Players[1].Bar; // Black player checkers (7-12)
+        var whiteBarCheckers = game.Board.WhiteBar; // White player checkers (1-6)
+        var blackBarCheckers = game.Board.BlackBar; // Black player checkers (7-12)
 
 // Populate white player's bar slots (1-6)
         for (int i = 0; i < whiteBarCheckers.Count; i++)
@@ -114,7 +114,7 @@ public class UIUpdater
 
         // Render white checkers in the bear off zone
         double whiteCheckerSize = whiteBearOffZone.ActualHeight * 0.9;
-        for (int i = 0; i < game.Players[0].BearOff.Count; i++)
+        for (int i = 0; i < 15 - game.Players[0].Checkers.Count; i++)
         {
             var checkerUI = new Ellipse
             {
@@ -128,7 +128,7 @@ public class UIUpdater
 
         // Render black checkers in the bear off zone
         double blackCheckerSize = blackBearOffZone.ActualHeight * 0.9;
-        for (int i = 0; i < game.Players[1].BearOff.Count; i++)
+        for (int i = 0; i < 15 - game.Players[1].Checkers.Count; i++)
         {
             var checkerUI = new Ellipse
             {

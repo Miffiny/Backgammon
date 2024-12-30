@@ -103,8 +103,49 @@ namespace Backgammon_UI
 
         private void NewGameButton_Click(object sender, RoutedEventArgs e)
         {
-            _mainFrontend.StartNewGame();
-            _mainFrontend.UpdateUI(); // Update the UI for the new game
+            // Get selected game mode
+            string? selectedMode = (GameModeComboBox.SelectedItem as ComboBoxItem)?.Content.ToString();
+            if (string.IsNullOrEmpty(selectedMode))
+            {
+                _mainFrontend.NotifyUser("Please select a game mode.");
+                return;
+            }
+
+            // Get selected side
+            string? selectedSide = (PlayerSideComboBox.SelectedItem as ComboBoxItem)?.Content.ToString();
+            if (string.IsNullOrEmpty(selectedSide))
+            {
+                _mainFrontend.NotifyUser("Please select a side.");
+                return;
+            }
+
+            // Get selected AI depth
+            string? selectedDepth = (AIDepthComboBox.SelectedItem as ComboBoxItem)?.Content.ToString();
+            int depth = 0;
+            if (!string.IsNullOrEmpty(selectedDepth))
+            {
+                depth = int.Parse(selectedDepth);
+            }
+
+            // Configure GameController based on selection
+            int mode = selectedMode switch
+            {
+                "Player vs Player" => 0,
+                "Player vs AI" => 1,
+                "AI vs AI" => 2,
+                _ => throw new InvalidOperationException("Invalid game mode selected.")
+            };
+
+            int playerColor = selectedSide switch
+            {
+                "White" => 0,
+                "Black" => 1,
+                "Random" => (new Random().Next(0, 2) == 0) ? 0 : 1,
+                _ => throw new InvalidOperationException("Invalid player side selected.")
+            };
+
+            // Start a new game
+            _mainFrontend.StartNewGame(mode, playerColor, depth);
         }
 
     }

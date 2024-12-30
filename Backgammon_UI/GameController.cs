@@ -5,12 +5,20 @@ namespace Backgammon_UI;
 public class GameController
 {
     private Game _game;
+    private GameMode _gameMode;
+    private CheckerColor _humanPlayerColor;
     
     public enum TurnState
     {
         RollingDice,
         MakingMove,
         EndTurn
+    }
+    public enum GameMode
+    {
+        PlayerVsPlayer,
+        PlayerVsAI,
+        AIVsAI
     }
     public TurnState CurrentTurnState;
     public event Action? OnGameUpdated;
@@ -20,18 +28,53 @@ public class GameController
         _game = new Game();
     }
 
-    public void NewGame()
+    public void ConfigureNewGame(int mode, CheckerColor playerColor, int depth)
     {
-        _game = new Game();
+        // Initialize the game instance
+        _game = new Game
+        {
+            depth = depth
+        };
+        
+        // Set the game mode
+        _gameMode = (GameMode)mode;
+        if (_gameMode == GameMode.PlayerVsAI)
+        {
+            _humanPlayerColor = playerColor;
+        }
+        
+        // Ensure the correct starting player
+        if (playerColor == CheckerColor.Black && _game.CurrentPlayer.Color == CheckerColor.White)
+        {
+            SwitchTurn();
+        }
         CurrentTurnState = TurnState.RollingDice;
+        // Notify UI to update the board and settings
         OnGameUpdated?.Invoke();
     }
-
+    
     public void StartTurn()
     {
         CurrentTurnState = TurnState.RollingDice;
         OnGameUpdated?.Invoke();
     }
+    
+    private void HandleTurn()
+    {
+        if (_gameMode == GameMode.PlayerVsPlayer || 
+            (_gameMode == GameMode.PlayerVsAI && IsHumanTurn()))
+        {
+            // Wait for player input (handled by MainFrontend)
+            return;
+        }
+
+        // AI Turn
+        RollDice();
+        var bestMoves = _game.GetBestMoveForCurrentPlayer();
+        _game.ExecuteAIMoves(bestMoves);
+        EndTurn();
+    }
+
 
     public void RollDice()
     {
@@ -97,10 +140,20 @@ public class GameController
             return; // Exit turn flow since the game is over
         }
         StartTurn();
+        SwitchTurn();
     }
 
     public Game GetGameState()
     {
         return _game;
+    }
+    public void SwitchTurn()
+    {
+        HandleTurn();
+    }
+    private bool IsHumanTurn()
+    {
+        return _gameMode == GameMode.PlayerVsPlayer ||
+               (_gameMode == GameMode.PlayerVsAI && _game.CurrentPlayer.Color == _humanPlayerColor);
     }
 }
