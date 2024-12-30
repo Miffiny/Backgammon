@@ -8,6 +8,8 @@ public class Game
     public GameBoard Board { get; private set; }
     public bool IsGameOver { get; private set; }
     private int currentPlayerIndex;
+    
+    private AI.AI _ai; // Add an AI instance
 
     public Game()
     {
@@ -24,6 +26,9 @@ public class Game
         IsGameOver = false;
         
         InitializeCheckers();  // Call the method to initialize checkers
+        
+        // Initialize AI for the current player (optional: adjust dynamically later)
+        _ai = new AI.AI(CurrentPlayer, Board, Players);
     }
 
     // Method to initialize checkers on the board
@@ -56,28 +61,15 @@ public class Game
     {
         Dice.Roll();
     }
+    
+    public List<(int From, int To)> GetBestMoveForCurrentPlayer(int depth)
+    {
+        int[] diceValues = Dice.GetDiceValues(); // Get the current dice values
+        return _ai.GetBestMove(diceValues, depth); // Call AI to get the best move sequence
+    }
 
     public bool IsMoveValid(int fromIndex, int toIndex, int diceValue)
     {
-        if (fromIndex != 0 && CurrentPlayer.Bar.Count > 0) return false;
-        
-        // If checker is on the bar, player can only re-enter in the opponent's home board
-        if (CurrentPlayer.Bar.Count > 0)
-        {
-            return IsValidBarMove(toIndex, diceValue);
-        }
-        // Enforce moving in the correct direction
-        if (CurrentPlayer.Color == CheckerColor.White && toIndex <= fromIndex)
-        {
-            return false;  // White moves forward (to higher indices)
-        }
-        if (CurrentPlayer.Color == CheckerColor.Black && toIndex >= fromIndex)
-        {
-            return false;  // Black moves backward (to lower indices)
-        }
-        
-        return Board.IsMoveValid(CurrentPlayer, fromIndex, toIndex, diceValue);
-
         return GameUtils.IsMoveValid(fromIndex, toIndex, diceValue, CurrentPlayer, Board);
     }
     

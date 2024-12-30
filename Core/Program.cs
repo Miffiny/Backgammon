@@ -1,27 +1,29 @@
-﻿using Core;
+﻿namespace Core;
 
 class Program
 {
-    static void Main(string[] args)
+    static void Main()
     {
-        // Step 1: Initialize the game
+        // Initialize the game
         Game game = new Game();
 
-        // Step 3: Manually set dice values (e.g., dice roll of 3 and 5)
-        game.Dice.Value1 = 3;  // Assuming you have a method to manually set dice values for testing
-        game.Dice.Value2 = 5;
+        // Roll the dice
+        game.Dice.Value1 = 1;
+        game.Dice.Value2 = 4;
 
-        // Step 4: Perform a move (move from point 1 to point 4 using dice value of 3)
-        bool moveSuccessful = game.MakeMove(1, 4);  // Move from index 1 to 4 using one of the dice values
+        // Print the dice results
+        int[] diceValues = game.Dice.GetDiceValues();
+        Console.WriteLine($"Dice rolled: {string.Join(", ", diceValues)}");
 
-        // Output the result of the move
-        if (moveSuccessful)
+        // Call AI to get the best sequence of moves with depth 2
+        var ai = new AI.AI(game.CurrentPlayer, game.Board, game.Players);
+        var bestMoveSequence = ai.GetBestMove(diceValues, 2);
+
+        // Print the best move sequence
+        Console.WriteLine("Best move sequence:");
+        foreach (var move in bestMoveSequence)
         {
-            Console.WriteLine("Move was successful!");
-        }
-        else
-        {
-            Console.WriteLine("Move was invalid.");
+            Console.WriteLine($"Move from {move.From} to {move.To}");
         }
     }
 }

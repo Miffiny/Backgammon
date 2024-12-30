@@ -3,6 +3,8 @@
 public class GameBoard
 {
     public Point[] Points { get; private set; }  // An array of 24 points on the board
+    public List<Checker> WhiteBar { get; private set; } // White checkers on the bar
+    public List<Checker> BlackBar { get; private set; } // Black checkers on the bar
 
     public GameBoard()
     {
@@ -12,22 +14,30 @@ public class GameBoard
         {
             Points[i] = new Point(i + 1);
         }
+        WhiteBar = new List<Checker>();
+        BlackBar = new List<Checker>();
     }
     
-    public GameBoard Clone()
+    public GameBoard Clone(Player[] players)
     {
         // Create a new GameBoard instance
         GameBoard clonedBoard = new GameBoard();
 
-        // Clone each point on the board
-        for (int i = 0; i < Points.Length; i++)
+        // Clear all points in the cloned board
+        foreach (var point in clonedBoard.Points)
         {
-            clonedBoard.Points[i] = new Point(Points[i].Index);
+            point.Checkers.Clear();
+        }
 
-            // Clone each checker on the point
-            foreach (var checker in Points[i].Checkers)
+        // Populate the cloned board using the players' checkers
+        foreach (var player in players)
+        {
+            foreach (var checker in player.Checkers)
             {
-                clonedBoard.Points[i].AddChecker(new Checker(checker.Color, checker.Position));
+                if (checker.Position > 0) // Ensure the checker is on the board
+                {
+                    clonedBoard.Points[checker.Position - 1].AddChecker(checker);
+                }
             }
         }
 

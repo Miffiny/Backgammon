@@ -14,6 +14,19 @@ public class Player
         Bar = new List<Checker>();
         BearOff = new List<Checker>();
     }
+    
+    public Player Clone()
+    {
+        var clonedPlayer = new Player(this.Color)
+        {
+            Checkers = new List<Checker>(this.Checkers.Select(c => new Checker(c.Color, c.Position))),
+            Bar = new List<Checker>(this.Bar.Select(c => new Checker(c.Color, c.Position))),
+            BearOff = new List<Checker>(this.BearOff.Select(c => new Checker(c.Color, c.Position)))
+        };
+
+        return clonedPlayer;
+    }
+
 
     // Method to move a checker from the bar back onto the board
     public Checker ReEnterFromBar()
