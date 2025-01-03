@@ -92,8 +92,8 @@ public class GameBoardTests
         Assert.Empty(gameBoard.Points[0].Checkers);  // Red checker should be removed from point 1
         Assert.Single(gameBoard.Points[3].Checkers);  // Red checker should be on point 4
         Assert.Equal(whiteChecker, gameBoard.Points[3].Checkers.First());  // The red checker is now on point 4
-        Assert.Single(blackPlayer.Bar);  // White checker should be on the bar
-        Assert.Equal(blackChecker, blackPlayer.Bar.First());  // White checker is the one on the bar
+        Assert.Single(gameBoard.BlackBar);  // White checker should be on the bar
+        Assert.Equal(blackChecker, gameBoard.BlackBar.First());  // White checker is the one on the bar
     }
 
     [Fact]

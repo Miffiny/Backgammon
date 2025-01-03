@@ -105,6 +105,50 @@ public class UIUpdater
         }
     }
     
+    public void ResetHighlights(Panel gameBoard, Panel whiteBearOffZone, Panel blackBearOffZone)
+    {
+        for (int i = 1; i <= 24; i++)
+        {
+            var pointUI = gameBoard.FindName($"Point_{i}") as StackPanel;
+            if (pointUI != null) pointUI.Background = Brushes.SaddleBrown;
+        }
+
+        for (int i = 1; i <= 12; i++)
+        {
+            var barSlotUI = gameBoard.FindName($"BarSlot_{i}") as StackPanel;
+            if (barSlotUI != null) barSlotUI.Background = Brushes.BurlyWood;
+        }
+
+        whiteBearOffZone.Background = Brushes.LightGray;
+        blackBearOffZone.Background = Brushes.LightGray;
+    }
+
+    
+    public void HighlightLastMoves(List<(int From, int To)> moves, Panel gameBoard, Panel whiteBearOffZone, Panel blackBearOffZone)
+    {
+        foreach (var move in moves)
+        {
+            if (move.From == 0) // Highlight bar slot
+            {
+                var barSlot = gameBoard.FindName($"BarSlot_{move.To}") as StackPanel;
+                if (barSlot != null) barSlot.Background = Brushes.Yellow;
+            }
+            else if (move.To == -1) // Highlight bear off zone
+            {
+                if (move.From >= 19 && move.From <= 24) whiteBearOffZone.Background = Brushes.Green;
+                else blackBearOffZone.Background = Brushes.Green;
+            }
+            else // Highlight regular points
+            {
+                var endPoint = gameBoard.FindName($"Point_{move.To}") as StackPanel;
+                if (endPoint != null) endPoint.Background = Brushes.LightGreen;
+
+                var startPoint = gameBoard.FindName($"Point_{move.From}") as StackPanel;
+                if (startPoint != null) startPoint.Background = Brushes.Yellow;
+            }
+        }
+    }
+    
     
     public void UpdateBearOffZones(Game game, Panel whiteBearOffZone, Panel blackBearOffZone)
     {
@@ -145,6 +189,12 @@ public class UIUpdater
     {
         dice1.Text = $"Dice 1 value: {game.Dice.Value1.ToString()}";
         dice2.Text = $"Dice 2 value: {game.Dice.Value2.ToString()}";
+    }
+    
+    public void UpdateLastRoll(int[] lastRollValues, TextBlock lastRoll1, TextBlock lastRoll2)
+    {
+        lastRoll1.Text = lastRollValues.Length > 0 ? $"Last Roll 1: {lastRollValues[0]}" : "Last Roll 1: -";
+        lastRoll2.Text = lastRollValues.Length > 1 ? $"Last Roll 2: {lastRollValues[1]}" : "Last Roll 2: -";
     }
 
     public void UpdateCurrentPlayer(Game game, TextBlock currentPlayer)

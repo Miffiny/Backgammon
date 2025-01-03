@@ -317,7 +317,7 @@ public class AI
 
         for (int i = 1; i <= 6; i++)
         {
-            for (int j = i; j <= 6; j++) // Ensure j >= i to avoid duplicate permutations
+            for (int j = i; j <= 6; j++) // j >= i to avoid duplicate permutations
             {
                 if (i == j)
                 {
@@ -370,5 +370,3 @@ public class AI
     }
 
 }
-
-

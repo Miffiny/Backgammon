@@ -7,6 +7,9 @@ public class GameController
     private Game _game;
     private GameMode _gameMode;
     private CheckerColor _humanPlayerColor;
+    public List<(int From, int To)> LastMovesBuffer { get; private set; } = new List<(int From, int To)>();
+    private int[] _lastRollValues = new int[2];
+    private int[] _lastRollBuffer = new int[2];
     
     public enum TurnState
     {
@@ -30,6 +33,11 @@ public class GameController
 
     public void ConfigureNewGame(int mode, CheckerColor playerColor, int depth)
     {
+        // Reset last roll buffers
+        _lastRollBuffer = new int[2];
+        _lastRollValues = new int[2];
+        LastMovesBuffer = new List<(int From, int To)>();
+        CurrentTurnState = TurnState.RollingDice;
         // Initialize the game instance
         _game = new Game
         {
@@ -48,7 +56,6 @@ public class GameController
         {
             SwitchTurn();
         }
-        CurrentTurnState = TurnState.RollingDice;
         // Notify UI to update the board and settings
         OnGameUpdated?.Invoke();
     }
@@ -71,6 +78,7 @@ public class GameController
         // AI Turn
         RollDice();
         var bestMoves = _game.GetBestMoveForCurrentPlayer();
+        LastMovesBuffer.AddRange(bestMoves); // Add all AI moves to the buffer
         _game.ExecuteAIMoves(bestMoves);
         EndTurn();
     }
@@ -81,7 +89,10 @@ public class GameController
         if (CurrentTurnState != TurnState.RollingDice)
             throw new InvalidOperationException("Cannot roll dice outside of the RollingDice state.");
 
+        LastMovesBuffer.Clear();
+        _lastRollValues = _lastRollBuffer;
         _game.RollDice();
+        _lastRollBuffer = _game.Dice.GetDiceValues();
         CurrentTurnState = TurnState.MakingMove;
 
         // Check if moves are possible
@@ -103,6 +114,7 @@ public class GameController
         bool moveSuccess = _game.MakeMove(fromIndex, toIndex);
         if (moveSuccess)
         {
+            LastMovesBuffer.Add((fromIndex, toIndex)); // Track the move
             // Check if further moves are available
             if (!_game.HasAvailableMoves())
             {
@@ -147,6 +159,11 @@ public class GameController
     {
         return _game;
     }
+    public int[] GetLastRollValues()
+    {
+        return _lastRollValues;
+    }
+
     public void SwitchTurn()
     {
         HandleTurn();

@@ -23,15 +23,15 @@ public class Game
 
         Board = new GameBoard();
         Dice = new Dice();
-        currentPlayerIndex = 0;
+        currentPlayerIndex = new Random().Next(0, 2);
         CurrentPlayer = Players[currentPlayerIndex];
         IsGameOver = false;
         depth = 0;
         
         InitializeCheckers();  // Call the method to initialize checkers
         
-        _whiteAI = new AI.AI(GetOpponent(), Board, Players);
-        _blackAI = new AI.AI(GetOpponent(), Board, Players);
+        _whiteAI = new AI.AI(Players[0], Board, Players);
+        _blackAI = new AI.AI(Players[1], Board, Players);
     }
 
     // Method to initialize checkers on the board

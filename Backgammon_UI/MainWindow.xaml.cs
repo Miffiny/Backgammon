@@ -83,7 +83,7 @@ namespace Backgammon_UI
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
             // Initialize MainFrontend with UI components
-            _mainFrontend.Initialize(GameBoard, Dice1, Dice2, CurrentPlayer, RollDiceButton, WhiteBearOffZone, BlackBearOffZone);
+            _mainFrontend.Initialize(GameBoard, Dice1, Dice2, LastRoll1, LastRoll2, CurrentPlayer, RollDiceButton, WhiteBearOffZone, BlackBearOffZone);
 
             // Populate the board with checkers
             _mainFrontend.UpdateUI();

@@ -16,6 +16,8 @@ namespace Backgammon_UI
         private Button? _rollDiceButton;
         private Panel? _whiteBearOffZone;
         private Panel? _blackBearOffZone;
+        private TextBlock? _lastRoll1;
+        private TextBlock? _lastRoll2;
 
         private int? _selectedPoint;
 
@@ -27,12 +29,14 @@ namespace Backgammon_UI
         }
 
         // Delayed initialization to set up UI references
-        public void Initialize(Panel gameBoard, TextBlock dice1, TextBlock dice2, TextBlock currentPlayer,
+        public void Initialize(Panel gameBoard, TextBlock dice1, TextBlock dice2, TextBlock lastRoll1, TextBlock lastRoll2, TextBlock currentPlayer,
             Button rollDiceButton,  Panel whiteBearOffZone, Panel blackBearOffZone)
         {
             _gameBoard = gameBoard;
             _dice1 = dice1;
             _dice2 = dice2;
+            _lastRoll1 = lastRoll1;
+            _lastRoll2 = lastRoll2;
             _currentPlayer = currentPlayer;
             _rollDiceButton = rollDiceButton;
             _whiteBearOffZone = whiteBearOffZone;
@@ -216,37 +220,21 @@ namespace Backgammon_UI
             }
         }
         
-        private void ResetSelection()
+        public void ResetSelection()
         {
+            var lastMoves = _gameController.LastMovesBuffer;
             _selectedPoint = null;
 
             if (_gameBoard == null || _whiteBearOffZone == null || _blackBearOffZone == null)
                 return;
 
-            // Reset all point highlights
-            for (int i = 1; i <= 24; i++)
-            {
-                var pointUI = _gameBoard.FindName($"Point_{i}") as StackPanel;
-                if (pointUI != null)
-                {
-                    pointUI.Background = Brushes.SaddleBrown;
-                }
-            }
+            // Delegate resetting all highlights to UIUpdater
+            _uiUpdater.ResetHighlights(_gameBoard, _whiteBearOffZone, _blackBearOffZone);
 
-            // Reset all bar slot highlights
-            for (int i = 1; i <= 12; i++)
-            {
-                var barSlotUI = _gameBoard.FindName($"BarSlot_{i}") as StackPanel;
-                if (barSlotUI != null)
-                {
-                    barSlotUI.Background = Brushes.BurlyWood;
-                }
-            }
-
-            // Reset bear off zones
-            _whiteBearOffZone.Background = Brushes.LightGray;
-            _blackBearOffZone.Background = Brushes.LightGray;
+            // Highlight the last moves using the buffer
+            _uiUpdater.HighlightLastMoves(lastMoves, _gameBoard, _whiteBearOffZone, _blackBearOffZone);
         }
+
         public int[] GetAvailableEndPoints(int startIndex)
         {
             return _gameController.GetAvailableEndPoints(startIndex);
@@ -271,7 +259,10 @@ namespace Backgammon_UI
         public void UpdateUI()
         {
             var game = _gameController.GetGameState();
-            if (_gameBoard == null || _dice1 == null || _dice2 == null || _currentPlayer == null ||
+            var lastMoves = _gameController.LastMovesBuffer;
+            var lastRollValues = _gameController.GetLastRollValues();
+            if (_gameBoard == null || _dice1 == null || _dice2 == null || _currentPlayer == null || 
+                _lastRoll1 == null || _lastRoll2 == null ||
                 _rollDiceButton == null || _whiteBearOffZone == null || _blackBearOffZone == null)
             {
                 // Avoid null reference exceptions if not fully initialized
@@ -280,8 +271,12 @@ namespace Backgammon_UI
 
             _uiUpdater.UpdateGameBoard(game, _gameBoard);
             _uiUpdater.UpdateDice(game, _dice1, _dice2);
+            _uiUpdater.UpdateLastRoll(lastRollValues, _lastRoll1, _lastRoll2);
             _uiUpdater.UpdateCurrentPlayer(game, _currentPlayer);
             _uiUpdater.UpdateBearOffZones(game, _whiteBearOffZone, _blackBearOffZone);
+            _uiUpdater.ResetHighlights(_gameBoard, _whiteBearOffZone, _blackBearOffZone);
+            // Highlight the last moves using the buffer
+            _uiUpdater.HighlightLastMoves(lastMoves, _gameBoard, _whiteBearOffZone, _blackBearOffZone);
 
             // Enable or disable UI elements based on the current turn state
             var state = _gameController.CurrentTurnState;
