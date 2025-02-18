@@ -38,12 +38,13 @@ public class AI
         }
         Console.WriteLine("Total count of unique end states");
         Console.WriteLine(stateToMoves.Count);
+        stateToMoves.Clear();
         return bestMoveSequence;
     }
 
     private int ExpectMiniMax(GameBoard board, int depth, bool maximizingPlayer, Player currentPlayer)
     {
-        // Base case: evaluate the board if maximum depth is reached
+        // Base case: if max depth reached, evaluate the board
         if (depth == 0)
         {
             return EvaluateBoard(currentPlayer, board);
@@ -51,27 +52,31 @@ public class AI
 
         int bestValue = maximizingPlayer ? int.MinValue : int.MaxValue;
         var possibleDiceOutcomes = GenerateAllDiceOutcomes();
-    
+
         foreach (var diceOutcome in possibleDiceOutcomes)
         {
             var possibleStates = GenerateUniqueStates(board, currentPlayer, diceOutcome);
+            double outcomeWeight = (diceOutcome[0] == diceOutcome[1]) ? 0.5 : 1.0; // Halve doubles
 
             foreach (var state in possibleStates)
             {
                 int value = ExpectMiniMax(state, depth - 1, !maximizingPlayer, GetOpponent(currentPlayer));
 
+                // Apply weight if it's a double
+                int weightedValue = (int)(value * outcomeWeight);
+
                 if (maximizingPlayer)
                 {
-                    bestValue = Math.Max(bestValue, value); // Maximize for the current player
+                    bestValue = Math.Max(bestValue, weightedValue);
                 }
                 else
                 {
-                    bestValue = Math.Min(bestValue, value); // Minimize for the opponent
+                    bestValue = Math.Min(bestValue, weightedValue);
                 }
             }
         }
 
-        return bestValue; // Return the optimal value for this level
+        return bestValue;
     }
     
     private List<(int From, int To)> RetrieveMoveSequence(GameBoard board)
@@ -151,7 +156,7 @@ public class AI
                 {
                     for (int toIndex = 19; toIndex <= 24; toIndex++)
                     {
-                        if (GameUtils.IsValidBarMove(toIndex, diceValue, currentPlayer, board))
+                        if (GameUtils.IsValidBarMove(toIndex, diceValue, currentPlayer, board) && !moves.Contains((0, toIndex)))
                         {
                             moves.Add((0, toIndex));
                         }
@@ -176,21 +181,30 @@ public class AI
                     {
                         if (GameUtils.IsMoveValid(point.Index, forwardIndex, diceValue, currentPlayer, board))
                         {
-                            moves.Add((point.Index, forwardIndex));
+                            if (!moves.Contains((point.Index, forwardIndex)))
+                            {
+                                moves.Add((point.Index, forwardIndex));
+                            }
                         }
                     }
                     else if (currentPlayer.Color == CheckerColor.Black)
                     {
                         if (GameUtils.IsMoveValid(point.Index, backwardIndex, diceValue, currentPlayer, board))
                         {
-                            moves.Add((point.Index, backwardIndex));
+                            if (!moves.Contains((point.Index, backwardIndex)))
+                            {
+                                moves.Add((point.Index, backwardIndex));
+                            }
                         }
                     }
 
                     // Handle bearing off
                     if (GameUtils.CanBearOffFromIndex(point.Index, board, currentPlayer, diceValues))
                     {
-                        moves.Add((point.Index, -1));
+                        if (!moves.Contains((point.Index, -1)))
+                        {
+                            moves.Add((point.Index, -1));
+                        }
                     }
                 }
             }
@@ -211,7 +225,6 @@ public class AI
                 string stateHash = HashBoardState(currentBoard);
                 if (stateToMoves.ContainsKey(stateHash))
                 {
-                    stateToMoves[stateHash] = new List<(int From, int To)>(currentMoves);
                     uniqueStates.Add(currentBoard);
                     currentCallStates.Add(stateHash); // Track this state
                 }
@@ -261,6 +274,8 @@ public class AI
                 hashComponents.Add($"{point.Index}:{checkers.Count}:{checkers[0].Color}");
             }
         }
+        hashComponents.Add($"{board.WhiteBar.Count}:WBar");
+        hashComponents.Add($"{board.BlackBar.Count}:BBar");
         return string.Join("|", hashComponents);
     }
     
@@ -273,7 +288,17 @@ public class AI
         if (src == 0)
         {
             Checker checker = simulatedBoard.RemoveFromBar(currentPlayer.Color);
-            simulatedBoard.Points[dst - 1].AddChecker(checker);
+            Point toPoint = simulatedBoard.Points[dst - 1];
+        
+            // Check if re-entering checker hits an opponent's blot
+            if (toPoint.IsBlot(currentPlayer.Color))
+            {
+                Checker opponentChecker = toPoint.RemoveChecker();
+                opponentChecker.Position = 0;
+                simulatedBoard.AddToBar(opponentChecker);
+            }
+        
+            toPoint.AddChecker(checker);
             checker.Position = dst;
         }
         else if (dst == -1)
@@ -337,8 +362,11 @@ public class AI
     private int[] RemoveUsedDie(int[] diceValues, int src, int dst, CheckerColor color)
     {
         int diceValue;
-
-        if (src == 0) // Re-entering from the bar
+        if (dst == -1) // Bearing off
+        {
+            diceValue = (color == CheckerColor.White) ? (25 - src) : src;
+        }
+        else if (src == 0) // Re-entering from the bar
         {
             if (color == CheckerColor.White)
             {
@@ -356,14 +384,18 @@ public class AI
 
         // Remove the used dice value
         var newDiceValues = new List<int>(diceValues);
-        while(true)
+        if (newDiceValues.Contains(diceValue))
         {
-            if (newDiceValues.Contains(diceValue))
+            newDiceValues.Remove(diceValue);
+        }
+        else if (dst == -1) // Bearing off but exact dice value not found
+        {
+            // Find the closest higher dice value
+            int closestHigherDie = newDiceValues.Where(d => d > diceValue).OrderBy(d => d).FirstOrDefault();
+            if (closestHigherDie > 0)
             {
-                newDiceValues.Remove(diceValue);
-                continue;
+                newDiceValues.Remove(closestHigherDie);
             }
-            break;
         }
 
         return newDiceValues.ToArray();

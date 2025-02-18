@@ -49,13 +49,14 @@ public class GameController
         if (_gameMode == GameMode.PlayerVsAI)
         {
             _humanPlayerColor = playerColor;
+            // Ensure the correct starting player
+            if (playerColor == CheckerColor.Black && _game.CurrentPlayer.Color == CheckerColor.White)
+            {
+                HandleTurn();
+            }
         }
         
-        // Ensure the correct starting player
-        if (playerColor == CheckerColor.Black && _game.CurrentPlayer.Color == CheckerColor.White)
-        {
-            SwitchTurn();
-        }
+        
         // Notify UI to update the board and settings
         OnGameUpdated?.Invoke();
     }
@@ -80,6 +81,7 @@ public class GameController
         var bestMoves = _game.GetBestMoveForCurrentPlayer();
         LastMovesBuffer.AddRange(bestMoves); // Add all AI moves to the buffer
         _game.ExecuteAIMoves(bestMoves);
+        _lastRollValues = _lastRollBuffer;
         EndTurn();
     }
 
@@ -115,7 +117,7 @@ public class GameController
         if (moveSuccess)
         {
             LastMovesBuffer.Add((fromIndex, toIndex)); // Track the move
-            // Check if further moves are available
+            // If no further moves are available, schedule EndTurn asynchronously
             if (!_game.HasAvailableMoves())
             {
                 EndTurn();
@@ -136,23 +138,30 @@ public class GameController
                 EndTurn();
             }
         }
-        OnGameUpdated?.Invoke();
         return moveSuccess;
     }
     
     private void EndTurn()
     {
-        CurrentTurnState = TurnState.EndTurn;
-        _game.EndTurn();
-        if (_game.IsGameOver)
-        {
-            // Notify user that the game is over and declare the winner
-            string winner = _game.CurrentPlayer.Color == CheckerColor.White ? "White" : "Black";
-            System.Windows.MessageBox.Show($"Game Over! {winner} player wins!", "Game Over", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
-            return; // Exit turn flow since the game is over
-        }
-        StartTurn();
-        SwitchTurn();
+        System.Windows.Application.Current.Dispatcher.BeginInvoke(
+            new Action(() =>
+            {
+                CurrentTurnState = TurnState.EndTurn;
+                _game.EndTurn();
+                if (_game.IsGameOver)
+                {
+                    string winner = _game.CurrentPlayer.Color == CheckerColor.White ? "White" : "Black";
+                    System.Windows.MessageBox.Show($"Game Over! {winner} player wins!",
+                        "Game Over", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
+                }
+                else
+                {
+                    StartTurn();
+                    HandleTurn();
+                }
+                OnGameUpdated?.Invoke();
+            }),
+            System.Windows.Threading.DispatcherPriority.Background);
     }
 
     public Game GetGameState()
@@ -163,11 +172,7 @@ public class GameController
     {
         return _lastRollValues;
     }
-
-    public void SwitchTurn()
-    {
-        HandleTurn();
-    }
+    
     private bool IsHumanTurn()
     {
         return _gameMode == GameMode.PlayerVsPlayer ||

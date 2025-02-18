@@ -63,7 +63,7 @@ public static class GameUtils
     
     public static bool CanBearOffFromIndex(int srcIndex, GameBoard Board, Player CurrentPlayer, int[] diceValues)
     {
-        if (!CanBearOff(CurrentPlayer, diceValues)) return false;
+        if (!CanBearOff(CurrentPlayer, Board, diceValues)) return false;
         // Define home board indices and offset for white
         int[] homeBoardIndices = (CurrentPlayer.Color == CheckerColor.White) 
             ? [19, 20, 21, 22, 23, 24]
@@ -127,15 +127,31 @@ public static class GameUtils
         return false;
     }
     
-    public static bool CanBearOff(Player CurrentPlayer, int[] vals)
+    public static bool CanBearOff(Player CurrentPlayer, GameBoard Board, int[] vals)
     {
-        int[] homeBoardIndices = (CurrentPlayer.Color == CheckerColor.White) ? new int[] { 19, 20, 21, 22, 23, 24 } : new int[] { 1, 2, 3, 4, 5, 6 };
+        int[] homeBoardIndices = (CurrentPlayer.Color == CheckerColor.White) 
+            ? [19, 20, 21, 22, 23, 24]
+            : [1, 2, 3, 4, 5, 6];
+    
+        // Check if all checkers of the current player are within home board indices
+        foreach (var point in Board.Points)
+        {
+            foreach (var checker in point.Checkers)
+            {
+                if (checker.Color == CurrentPlayer.Color && !homeBoardIndices.Contains(checker.Position))
+                {
+                    return false; // A checker is outside the home board
+                }
+            }
+        }
+    
         foreach (int val in vals)
         {
-            if (val != 0) return CurrentPlayer.AllCheckersInHome(homeBoardIndices);
+            if (val != 0) return true;
         }
         return false;
     }
+
     
     public static int[] GetAvailableEndPoints(int startIndex, Player CurrentPlayer, GameBoard Board, int[] diceValues)
         {

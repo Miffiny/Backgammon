@@ -90,10 +90,6 @@ namespace Backgammon_UI
                     // Notify user to roll dice first if applicable
                     NotifyUser("Invalid move or roll the dice first.");
                 }
-                else
-                {
-                    UpdateUI();
-                }
                 ResetSelection(); // Reset after move
             }
         }

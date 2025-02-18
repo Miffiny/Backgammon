@@ -85,7 +85,7 @@
             <ComboBox Name="GameModeComboBox" Margin="5">
                 <ComboBoxItem Content="Player vs Player" />
                 <ComboBoxItem Content="Player vs AI" />
-                <!-- <ComboBoxItem Content="AI vs AI" /> -->
+                <ComboBoxItem Content="AI vs AI" />
             </ComboBox>
 
             <TextBlock Text="Select Side:" FontSize="16" Margin="5" />
