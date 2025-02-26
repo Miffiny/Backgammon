@@ -70,10 +70,6 @@ public class AI
         {
             // Generate possible moves for the current dice outcome.
             var possibleStates = GenerateUniqueStates(board, currentPlayer, diceOutcome);
-            if (possibleStates.Count == 0)
-            {
-                bestValue = beta;
-            }
             // In AI's move, we want moves that increase the opponent's bar count.
             int baseOpponentBarCount = board.GetBar(GetOpponent(currentPlayer).Color).Count;
             possibleStates = possibleStates
@@ -83,8 +79,11 @@ public class AI
             foreach (var state in possibleStates)
             {
                 int value = ExpectMiniMax(state, depth - 1, false, GetOpponent(currentPlayer), alpha, beta);
-                bestValue = Math.Max(bestValue, value);
 
+                if (value != Int32.MaxValue)
+                {
+                    bestValue = Math.Max(bestValue, value);
+                }
                 if (bestValue >= beta)
                 {
                     // β cutoff: prune remaining moves in this branch.
@@ -103,10 +102,6 @@ public class AI
         foreach (var diceOutcome in possibleDiceOutcomes)
         {
             var possibleStates = GenerateUniqueStates(board, currentPlayer, diceOutcome);
-            if (possibleStates.Count == 0)
-            {
-                bestValue = alpha;
-            }
             // In opponent's move, currentPlayer is the opponent.
             // We want to look at the AI's bar count.
             Player aiPlayer = GetOpponent(currentPlayer); // because opponent's opponent is the AI.
@@ -118,8 +113,12 @@ public class AI
             foreach (var state in possibleStates)
             {
                 int value = ExpectMiniMax(state, depth - 1, true, GetOpponent(currentPlayer), alpha, beta);
-                bestValue = Math.Min(bestValue, value);
 
+                if (value != Int32.MinValue)
+                {
+                    bestValue = Math.Min(bestValue, value);
+                }
+                
                 if (bestValue <= alpha)
                 {
                     // α cutoff: prune remaining moves in this branch.

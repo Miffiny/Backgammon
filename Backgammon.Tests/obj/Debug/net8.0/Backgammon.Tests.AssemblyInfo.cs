@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Backgammon.Tests")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4598f33cf9840d4fdd3024465ce320ba073346d9")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f7370f29e38239316ef4ec232528b2562aa9f7cf")]
 [assembly: System.Reflection.AssemblyProductAttribute("Backgammon.Tests")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Backgammon.Tests")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
