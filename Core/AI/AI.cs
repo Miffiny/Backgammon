@@ -17,17 +17,28 @@ public class AI
 
     public List<(int From, int To)> GetBestMove(int[] diceValues, int depth)
     {
-        // Use _board and _aiPlayer directly
+        // Use _board and _aiPlayer directly to generate unique resulting board states.
         var uniqueStates = GenerateUniqueStates(_board, _aiPlayer, diceValues);
-        
+    
+        // Determine the baseline opponent bar count from the current board state.
+        int baseOpponentBarCount = _board.GetBar(GetOpponent(_aiPlayer).Color).Count;
+    
+        // Sort uniqueStates so that states with a higher increase in the opponent's bar count are prioritized.
+        uniqueStates = uniqueStates
+            .OrderByDescending(state => state.GetBar(GetOpponent(_aiPlayer).Color).Count - baseOpponentBarCount)
+            .ToList();
 
         int bestScore = int.MinValue;
         List<(int From, int To)> bestMoveSequence = new List<(int From, int To)>();
-        
+    
+        int moveNumber = 1;
         foreach (var state in uniqueStates)
         {
-            // Use ExpectMiniMax to evaluate each state
-            int score = ExpectMiniMax(state, depth, false, _aiPlayer);
+            Console.WriteLine($"Check move {moveNumber} out of {uniqueStates.Count}");
+            Console.WriteLine(stateToMoves.Count);
+            moveNumber++;
+            // Evaluate each state using ExpectMiniMax (with alpha-beta parameters)
+            int score = ExpectMiniMax(state, depth, false, _aiPlayer, int.MinValue, int.MaxValue);
             if (score > bestScore)
             {
                 Console.WriteLine("Found better option, current count of states is");
@@ -42,42 +53,86 @@ public class AI
         return bestMoveSequence;
     }
 
-    private int ExpectMiniMax(GameBoard board, int depth, bool maximizingPlayer, Player currentPlayer)
+    private int ExpectMiniMax(GameBoard board, int depth, bool maximizingPlayer, Player currentPlayer, int alpha, int beta)
+{
+    // Base case: evaluate the board if maximum depth is reached
+    if (depth == 0)
     {
-        // Base case: if max depth reached, evaluate the board
-        if (depth == 0)
-        {
-            return EvaluateBoard(currentPlayer, board);
-        }
+        return EvaluateBoard(currentPlayer, board);
+    }
 
-        int bestValue = maximizingPlayer ? int.MinValue : int.MaxValue;
+    if (maximizingPlayer)
+    {
+        int bestValue = int.MinValue;
+        var possibleDiceOutcomes = GenerateAllDiceOutcomes();
+
+        foreach (var diceOutcome in possibleDiceOutcomes)
+        {
+            // Generate possible moves for the current dice outcome.
+            var possibleStates = GenerateUniqueStates(board, currentPlayer, diceOutcome);
+            if (possibleStates.Count == 0)
+            {
+                bestValue = beta;
+            }
+            // In AI's move, we want moves that increase the opponent's bar count.
+            int baseOpponentBarCount = board.GetBar(GetOpponent(currentPlayer).Color).Count;
+            possibleStates = possibleStates
+                .OrderByDescending(state => state.GetBar(GetOpponent(currentPlayer).Color).Count - baseOpponentBarCount)
+                .ToList();
+
+            foreach (var state in possibleStates)
+            {
+                int value = ExpectMiniMax(state, depth - 1, false, GetOpponent(currentPlayer), alpha, beta);
+                bestValue = Math.Max(bestValue, value);
+
+                if (bestValue >= beta)
+                {
+                    // β cutoff: prune remaining moves in this branch.
+                    return bestValue;
+                }
+                alpha = Math.Max(alpha, bestValue);
+            }
+        }
+        return bestValue;
+    }
+    else
+    {
+        int bestValue = int.MaxValue;
         var possibleDiceOutcomes = GenerateAllDiceOutcomes();
 
         foreach (var diceOutcome in possibleDiceOutcomes)
         {
             var possibleStates = GenerateUniqueStates(board, currentPlayer, diceOutcome);
-            double outcomeWeight = (diceOutcome[0] == diceOutcome[1]) ? 0.5 : 1.0; // Halve doubles
+            if (possibleStates.Count == 0)
+            {
+                bestValue = alpha;
+            }
+            // In opponent's move, currentPlayer is the opponent.
+            // We want to look at the AI's bar count.
+            Player aiPlayer = GetOpponent(currentPlayer); // because opponent's opponent is the AI.
+            int baseAIBarCount = board.GetBar(aiPlayer.Color).Count;
+            possibleStates = possibleStates
+                .OrderByDescending(state => state.GetBar(aiPlayer.Color).Count - baseAIBarCount)
+                .ToList();
 
             foreach (var state in possibleStates)
             {
-                int value = ExpectMiniMax(state, depth - 1, !maximizingPlayer, GetOpponent(currentPlayer));
+                int value = ExpectMiniMax(state, depth - 1, true, GetOpponent(currentPlayer), alpha, beta);
+                bestValue = Math.Min(bestValue, value);
 
-                // Apply weight if it's a double
-                int weightedValue = (int)(value * outcomeWeight);
-
-                if (maximizingPlayer)
+                if (bestValue <= alpha)
                 {
-                    bestValue = Math.Max(bestValue, weightedValue);
+                    // α cutoff: prune remaining moves in this branch.
+                    return bestValue;
                 }
-                else
-                {
-                    bestValue = Math.Min(bestValue, weightedValue);
-                }
+                beta = Math.Min(beta, bestValue);
             }
         }
-
         return bestValue;
     }
+}
+
+
     
     private List<(int From, int To)> RetrieveMoveSequence(GameBoard board)
     {
