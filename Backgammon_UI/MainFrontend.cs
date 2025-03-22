@@ -68,6 +68,8 @@ namespace Backgammon_UI
 
          public void HandlePointClick(int pointIndex)
         {
+            // Ensure the game mode is not AI vs AI and the current player is a human
+            
             if (_selectedPoint == null)
             {
                 _selectedPoint = pointIndex;

@@ -6,6 +6,8 @@ public class AI
     private readonly GameBoard _board;
     private readonly Player[] _players;
     private Dictionary<string, List<(int From, int To)>> stateToMoves;
+    public int initialAlpha = Int32.MinValue;
+    public int initialBeta = Int32.MaxValue;
 
     public AI(Player aiPlayer, GameBoard board, Player[] players)
     {
@@ -22,6 +24,8 @@ public class AI
     
         // Determine the baseline opponent bar count from the current board state.
         int baseOpponentBarCount = _board.GetBar(GetOpponent(_aiPlayer).Color).Count;
+        
+        
     
         // Sort uniqueStates so that states with a higher increase in the opponent's bar count are prioritized.
         uniqueStates = uniqueStates
@@ -38,7 +42,7 @@ public class AI
             Console.WriteLine(stateToMoves.Count);
             moveNumber++;
             // Evaluate each state using ExpectMiniMax (with alpha-beta parameters)
-            int score = ExpectiMiniMax(state, depth, false, _aiPlayer);
+            int score = ExpectiMiniMax(state, depth, false, _aiPlayer, initialAlpha, initialBeta);
             if (score > bestScore)
             {
                 Console.WriteLine("Found better option, current count of states is");
@@ -53,69 +57,79 @@ public class AI
         return bestMoveSequence;
     }
 
-    private int ExpectiMiniMax(GameBoard board, int depth, bool maximizingPlayer, Player currentPlayer)
+    private int ExpectiMiniMax(GameBoard board, int depth, bool maximizingPlayer, Player currentPlayer, int alpha, int beta)
     {
-        // Base case: return the board evaluation if depth is 0
+        // Terminal condition: lowest level (or node is terminal)
         if (depth == 0)
         {
             return EvaluateBoard(currentPlayer, board);
         }
 
-        // Generate all possible dice outcomes (each outcome represents one unique dice combination)
+        // At this level, randomness is introduced by the dice roll.
+        // Generate all dice outcomes.
         var diceOutcomes = GenerateAllDiceOutcomes();
-        int totalWeightedValue = 0;
+        int totalValue = 0;
+        int totalFrequency = 0;
 
-        // Loop over each dice outcome
+        // For each dice outcome, compute a deterministic minimax value (with alpha-beta pruning).
         foreach (var diceOutcome in diceOutcomes)
         {
-            // Determine frequency: non-doubles represent two distinct outcomes ([i,j] and [j,i]),
-            // while doubles represent a single outcome.
-            int frequency = (diceOutcome.Length == 2 && diceOutcome[0] != diceOutcome[1]) ? 2 : 1;
-            int outcomeValue;
-
-            // For this dice outcome, generate the resulting board states and choose the best (or worst)
-            if (maximizingPlayer)
-            {
-                int bestValue = int.MinValue;
-                var possibleStates = GenerateUniqueStates(board, currentPlayer, diceOutcome);
-                // Order states so that moves that increase opponent's bar count are considered first
-                int baseOpponentBarCount = board.GetBar(GetOpponent(currentPlayer).Color).Count;
-                possibleStates = possibleStates
-                    .OrderByDescending(state => state.GetBar(GetOpponent(currentPlayer).Color).Count - baseOpponentBarCount)
-                    .ToList();
-
-                foreach (var state in possibleStates)
-                {
-                    int value = ExpectiMiniMax(state, depth - 1, false, GetOpponent(currentPlayer));
-                    bestValue = Math.Max(bestValue, value);
-                }
-                outcomeValue = bestValue;
-            }
-            else
-            {
-                int worstValue = int.MaxValue;
-                var possibleStates = GenerateUniqueStates(board, currentPlayer, diceOutcome);
-                // In minimizing branch, we consider the AI's bar count (i.e. hurt the AI)
-                Player aiPlayer = GetOpponent(currentPlayer); // since currentPlayer is opponent in this branch
-                int baseAIBarCount = board.GetBar(aiPlayer.Color).Count;
-                possibleStates = possibleStates
-                    .OrderByDescending(state => state.GetBar(aiPlayer.Color).Count - baseAIBarCount)
-                    .ToList();
-
-                foreach (var state in possibleStates)
-                {
-                    int value = ExpectiMiniMax(state, depth - 1, true, GetOpponent(currentPlayer));
-                    worstValue = Math.Min(worstValue, value);
-                }
-                outcomeValue = worstValue;
-            }
-            // Add the weighted outcome value (frequency accounts for non-double outcomes being twice as likely)
-            totalWeightedValue += frequency * outcomeValue;
+            // Non-doubles (two different values) occur twice; doubles occur once.
+            int frequency = diceOutcome.Length == 2 && diceOutcome[0] != diceOutcome[1] ? 2 : 1;
+            int outcomeValue = MinimaxForDiceOutcome(board, depth, maximizingPlayer, currentPlayer, diceOutcome, alpha, beta);
+            totalValue += frequency * outcomeValue;
+            totalFrequency += frequency;
         }
 
-        // Divide by 36, the total number of dice outcomes (6 doubles count as 6*1 + 15 non-doubles count as 15*2 = 36)
-        return totalWeightedValue / 36;
+        // Return the weighted average.
+        if (totalFrequency == 0) return maximizingPlayer ? int.MinValue : int.MaxValue;
+        return totalValue / totalFrequency;
     }
+
+    private int MinimaxForDiceOutcome(GameBoard board, int depth, bool maximizingPlayer, Player currentPlayer, int[] diceOutcome, int alpha, int beta)
+    {
+        // At depth 0, evaluate directly.
+        if (depth == 0)
+        {
+            return EvaluateBoard(currentPlayer, board);
+        }
+
+        if (maximizingPlayer)
+        {
+            int value = int.MinValue;
+            // Generate all deterministic moves for the given dice outcome.
+            var possibleStates = GenerateUniqueStates(board, currentPlayer, diceOutcome);
+            foreach (var state in possibleStates)
+            {
+                int childValue = ExpectiMiniMax(state, depth - 1, false, GetOpponent(currentPlayer), alpha, beta);
+                value = Math.Max(value, childValue);
+                if (value >= beta) // β cutoff: if value exceeds beta, prune.
+                {
+                    return value;
+                }
+                alpha = Math.Max(alpha, value);
+            }
+            return value;
+        }
+        else
+        {
+            int value = int.MaxValue;
+            var possibleStates = GenerateUniqueStates(board, currentPlayer, diceOutcome);
+            foreach (var state in possibleStates)
+            {
+                int childValue = ExpectiMiniMax(state, depth - 1, true, GetOpponent(currentPlayer), alpha, beta);
+                value = Math.Min(value, childValue);
+                if (value <= alpha) // α cutoff: if value is less than alpha, prune.
+                {
+                    Console.WriteLine("Alpha cutoff");
+                    return value;
+                }
+                beta = Math.Min(beta, value);
+            }
+            return value;
+        }
+    }
+
 
 
 

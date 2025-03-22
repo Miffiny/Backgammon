@@ -7,6 +7,7 @@ public class GameController
     private Game _game;
     private GameMode _gameMode;
     private CheckerColor _humanPlayerColor;
+    private bool _isAIProcessing;
     public List<(int From, int To)> LastMovesBuffer { get; private set; } = new List<(int From, int To)>();
     private int[] _lastRollValues = new int[2];
     private int[] _lastRollBuffer = new int[2];
@@ -46,17 +47,11 @@ public class GameController
         
         // Set the game mode
         _gameMode = (GameMode)mode;
-        if (_gameMode == GameMode.PlayerVsAI)
+        _humanPlayerColor = playerColor;
+        if (!IsHumanTurn())
         {
-            _humanPlayerColor = playerColor;
-            // Ensure the correct starting player
-            if (playerColor == CheckerColor.Black && _game.CurrentPlayer.Color == CheckerColor.White)
-            {
-                HandleTurn();
-            }
+            HandleTurn();
         }
-        
-        
         // Notify UI to update the board and settings
         OnGameUpdated?.Invoke();
     }
@@ -67,7 +62,7 @@ public class GameController
         OnGameUpdated?.Invoke();
     }
     
-    private void HandleTurn()
+    private async void HandleTurn()
     {
         if (_gameMode == GameMode.PlayerVsPlayer || 
             (_gameMode == GameMode.PlayerVsAI && IsHumanTurn()))
@@ -75,14 +70,28 @@ public class GameController
             // Wait for player input (handled by MainFrontend)
             return;
         }
+        // Prevent re-triggering AI calculations while it's still processing
+        if (_isAIProcessing) return;
+        _isAIProcessing = true;
 
         // AI Turn
         RollDice();
-        var bestMoves = _game.GetBestMoveForCurrentPlayer();
-        LastMovesBuffer.AddRange(bestMoves); // Add all AI moves to the buffer
-        _game.ExecuteAIMoves(bestMoves);
+        var bestMoves = await Task.Run(() => _game.GetBestMoveForCurrentPlayer());
+        LastMovesBuffer.Clear();
+        // Execute each move one by one with UI updates
+        foreach (var move in bestMoves)
+        {
+            LastMovesBuffer.Add(move);
+            await Task.Delay(500); // Small delay to make moves visually distinct
+            System.Windows.Application.Current.Dispatcher.Invoke(() =>
+            {
+                _game.ExecuteAIMoves(new List<(int From, int To)> { move });
+                OnGameUpdated?.Invoke(); // Update UI after each move
+            });
+        }
         _lastRollValues = _lastRollBuffer;
         EndTurn();
+        _isAIProcessing = false; // AI processing is finished
     }
 
 
@@ -91,7 +100,7 @@ public class GameController
         if (CurrentTurnState != TurnState.RollingDice)
             throw new InvalidOperationException("Cannot roll dice outside of the RollingDice state.");
 
-        LastMovesBuffer.Clear();
+        
         _lastRollValues = _lastRollBuffer;
         _game.RollDice();
         _lastRollBuffer = _game.Dice.GetDiceValues();
@@ -173,7 +182,7 @@ public class GameController
         return _lastRollValues;
     }
     
-    private bool IsHumanTurn()
+    public bool IsHumanTurn()
     {
         return _gameMode == GameMode.PlayerVsPlayer ||
                (_gameMode == GameMode.PlayerVsAI && _game.CurrentPlayer.Color == _humanPlayerColor);
