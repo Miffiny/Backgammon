@@ -13,7 +13,7 @@ public class Game
     private AI.AI _blackAI; // Add an AI instance
     private AI.AI _whiteAI; // Add an AI instance
 
-    public Game()
+    public Game(string whiteAIConfig = "", string blackAIConfig = "")
     {
         Players =
         [
@@ -29,9 +29,8 @@ public class Game
         depth = 0;
         
         InitializeCheckers();  // Call the method to initialize checkers
-        
-        _whiteAI = new AI.AI(Players[0], Board, Players);
-        _blackAI = new AI.AI(Players[1], Board, Players);
+        _whiteAI = new AI.AI(Players[0], Board, Players, whiteAIConfig);
+        _blackAI = new AI.AI(Players[1], Board, Players, blackAIConfig);
     }
 
     // Method to initialize checkers on the board

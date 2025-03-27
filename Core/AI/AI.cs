@@ -6,15 +6,39 @@ public class AI
     private readonly GameBoard _board;
     private readonly Player[] _players;
     private Dictionary<string, List<(int From, int To)>> stateToMoves;
-    public int initialAlpha = Int32.MinValue;
-    public int initialBeta = Int32.MaxValue;
+    public int Alpha = Int32.MinValue;
+    public int Beta = Int32.MaxValue;
+    
+    // List of evaluation delegates
+    private readonly List<Func<Player, GameBoard, int, int>> evaluationFactors;
 
-    public AI(Player aiPlayer, GameBoard board, Player[] players)
+    public AI(Player aiPlayer, GameBoard board, Player[] players, string factorConfig)
     {
         _aiPlayer = aiPlayer;
         _board = board;
         _players = players;
-        stateToMoves = new Dictionary<string, List<(int From, int To)>>(); // Initialize here
+        stateToMoves = new Dictionary<string, List<(int From, int To)>>();
+
+        evaluationFactors = new List<Func<Player, GameBoard, int, int>>();
+        
+        foreach (char c in factorConfig)
+        {
+            switch (c)
+            {
+                case '0':
+                    evaluationFactors.Add(BlotFactor);
+                    break;
+                case '1':
+                    evaluationFactors.Add(PrimeFactor);
+                    break;
+                case '2':
+                    evaluationFactors.Add(HomeCheckersFactor);
+                    break;
+                case '3':
+                    evaluationFactors.Add(CheckerStackPenalty);
+                    break;
+            }
+        }
     }
 
     public List<(int From, int To)> GetBestMove(int[] diceValues, int depth)
@@ -41,11 +65,11 @@ public class AI
             Console.WriteLine($"Check move {moveNumber} out of {uniqueStates.Count}");
             Console.WriteLine(stateToMoves.Count);
             moveNumber++;
-            // Evaluate each state using ExpectMiniMax (with alpha-beta parameters)
-            int score = ExpectiMiniMax(state, depth, false, _aiPlayer, initialAlpha, initialBeta);
+            // Evaluate each state using ExpectMiniMax (with Alpha-Beta parameters)
+            int score = ExpectiMiniMax(state, depth, false, GetOpponent(_aiPlayer));
             if (score > bestScore)
             {
-                Console.WriteLine("Found better option, current count of states is");
+                Console.WriteLine($"Found better option with score {score}, current count of states is");
                 Console.WriteLine(stateToMoves.Count);
                 bestScore = score;
                 bestMoveSequence = RetrieveMoveSequence(state);
@@ -54,10 +78,12 @@ public class AI
         Console.WriteLine("Total count of unique end states");
         Console.WriteLine(stateToMoves.Count);
         stateToMoves.Clear();
+        Alpha = Int32.MinValue;
+        Beta = Int32.MaxValue;
         return bestMoveSequence;
     }
 
-    private int ExpectiMiniMax(GameBoard board, int depth, bool maximizingPlayer, Player currentPlayer, int alpha, int beta)
+    private int ExpectiMiniMax(GameBoard board, int depth, bool maximizingPlayer, Player currentPlayer)
     {
         // Terminal condition: lowest level (or node is terminal)
         if (depth == 0)
@@ -71,12 +97,12 @@ public class AI
         int totalValue = 0;
         int totalFrequency = 0;
 
-        // For each dice outcome, compute a deterministic minimax value (with alpha-beta pruning).
+        // For each dice outcome, compute a deterministic minimax value (with Alpha-Beta pruning).
         foreach (var diceOutcome in diceOutcomes)
         {
             // Non-doubles (two different values) occur twice; doubles occur once.
             int frequency = diceOutcome.Length == 2 && diceOutcome[0] != diceOutcome[1] ? 2 : 1;
-            int outcomeValue = MinimaxForDiceOutcome(board, depth, maximizingPlayer, currentPlayer, diceOutcome, alpha, beta);
+            int outcomeValue = MinimaxForDiceOutcome(board, depth, maximizingPlayer, currentPlayer, diceOutcome);
             totalValue += frequency * outcomeValue;
             totalFrequency += frequency;
         }
@@ -86,54 +112,50 @@ public class AI
         return totalValue / totalFrequency;
     }
 
-    private int MinimaxForDiceOutcome(GameBoard board, int depth, bool maximizingPlayer, Player currentPlayer, int[] diceOutcome, int alpha, int beta)
+    private int MinimaxForDiceOutcome(GameBoard board, int depth, bool maximizingPlayer, Player currentPlayer, int[] diceOutcome)
     {
-        // At depth 0, evaluate directly.
-        if (depth == 0)
+        var possibleStates = GenerateUniqueStates(board, currentPlayer, diceOutcome);
+
+        if (possibleStates.Count == 0)
         {
-            return EvaluateBoard(currentPlayer, board);
+            // Apply a moderate penalty since the player skips turn
+            int penalty = EvaluateBoard(currentPlayer, board);
+            penalty = maximizingPlayer ? penalty - 10 : penalty + 10; //avg is 8.166 but opponent may hit you and worsen position
+            return penalty;
         }
 
         if (maximizingPlayer)
         {
             int value = int.MinValue;
             // Generate all deterministic moves for the given dice outcome.
-            var possibleStates = GenerateUniqueStates(board, currentPlayer, diceOutcome);
             foreach (var state in possibleStates)
             {
-                int childValue = ExpectiMiniMax(state, depth - 1, false, GetOpponent(currentPlayer), alpha, beta);
+                int childValue = ExpectiMiniMax(state, depth - 1, false, GetOpponent(currentPlayer));
                 value = Math.Max(value, childValue);
-                if (value >= beta) // β cutoff: if value exceeds beta, prune.
+                if (value >= Beta) // β cutoff: if value exceeds Beta, prune.
                 {
                     return value;
                 }
-                alpha = Math.Max(alpha, value);
+                Alpha = Math.Max(Alpha, value);
             }
             return value;
         }
         else
         {
             int value = int.MaxValue;
-            var possibleStates = GenerateUniqueStates(board, currentPlayer, diceOutcome);
             foreach (var state in possibleStates)
             {
-                int childValue = ExpectiMiniMax(state, depth - 1, true, GetOpponent(currentPlayer), alpha, beta);
+                int childValue = ExpectiMiniMax(state, depth - 1, true, GetOpponent(currentPlayer));
                 value = Math.Min(value, childValue);
-                if (value <= alpha) // α cutoff: if value is less than alpha, prune.
+                if (value <= Alpha) // α cutoff: if value is less than Alpha, prune.
                 {
-                    Console.WriteLine("Alpha cutoff");
                     return value;
                 }
-                beta = Math.Min(beta, value);
+                Beta = Math.Min(Beta, value);
             }
             return value;
         }
     }
-
-
-
-
-    
     private List<(int From, int To)> RetrieveMoveSequence(GameBoard board)
     {
         // Use the state-to-moves mapping generated in GenerateUniqueStates
@@ -148,44 +170,136 @@ public class AI
         return new List<(int From, int To)>();
     }
 
-    
     private int EvaluateBoard(Player currentPlayer, GameBoard board)
     {
-        // Calculate the total distance for white checkers
-        int whiteDistance = 0;
-        foreach (var point in board.Points)
+        int whiteDistance = board.WhiteBar.Count * 25;
+        int blackDistance = board.BlackBar.Count * 25;
+
+        // Iterate directly over board points
+        var points = board.Points;
+        for (int i = 0; i < points.Length; i++)
         {
-            foreach (var checker in point.Checkers)
+            var point = points[i];
+            if (point.Owner == CheckerColor.White)
+                whiteDistance += (25 - point.Index) * point.Checkers.Count;
+            else if (point.Owner == CheckerColor.Black)
+                blackDistance += point.Index * point.Checkers.Count;
+        }
+
+        // Apply evaluation factors independently to each player's score
+        Player opponent = GetOpponent(currentPlayer);
+        foreach (var factor in evaluationFactors)
+        {
+            if (currentPlayer.Color == CheckerColor.White)
             {
-                if (checker.Color == CheckerColor.White)
-                {
-                    whiteDistance += 25 - point.Index; // Distance for white
-                }
+                whiteDistance += factor(currentPlayer, board, whiteDistance);
+                blackDistance += factor(opponent, board, blackDistance);
+            }
+            else
+            {
+                whiteDistance += factor(opponent, board, whiteDistance);
+                blackDistance += factor(currentPlayer, board, blackDistance);
             }
         }
 
-        // Add checkers on the bar for white
-        whiteDistance += board.WhiteBar.Count * 25;
-
-        // Calculate the total distance for black checkers
-        int blackDistance = 0;
-        foreach (var point in board.Points)
-        {
-            foreach (var checker in point.Checkers)
-            {
-                if (checker.Color == CheckerColor.Black)
-                {
-                    blackDistance += point.Index; // Distance for black
-                }
-            }
-        }
-
-        // Add checkers on the bar for black
-        blackDistance += board.BlackBar.Count * 25;
-        // Return the difference based on the current player's perspective
-        if (currentPlayer.Color == CheckerColor.White) return whiteDistance - blackDistance; // Maximize for white
-        return blackDistance - whiteDistance; // Maximize for black
+        // Return evaluation from current player's perspective
+        return currentPlayer.Color == CheckerColor.White
+            ? whiteDistance - blackDistance
+            : blackDistance - whiteDistance;
     }
+    
+    private int BlotFactor(Player player, GameBoard board, int currentScore)
+    {
+        int blotCount = 0;
+        var points = board.Points;
+
+        // Efficiently count blots without LINQ or extra allocations
+        for (int i = 0; i < points.Length; i++)
+        {
+            var point = points[i];
+            if (point.Checkers.Count == 1 && point.Checkers[0].Color == player.Color)
+                blotCount++;
+        }
+
+        // Compute penalty factor (e.g., 1 blot => factor 0.9, 2 blots => factor 0.8)
+        double factor = 1.0 + blotCount * 0.02;
+
+        // Apply factor multiplicatively to current score
+        return (int)(currentScore * factor);
+    }
+    
+    private int PrimeFactor(Player player, GameBoard board, int currentScore)
+    {
+        var points = board.Points;
+        int consecutiveBlocks = 0;
+        int maxConsecutiveBlocks = 0;
+
+        for (int i = 0; i < points.Length; i++)
+        {
+            var point = points[i];
+            if (point.Owner == player.Color && point.Checkers.Count >= 2)
+            {
+                consecutiveBlocks++;
+                // Keep track of longest consecutive blocks
+                if (consecutiveBlocks > maxConsecutiveBlocks)
+                    maxConsecutiveBlocks = consecutiveBlocks;
+            }
+            else
+            {
+                consecutiveBlocks = 0;
+            }
+        }
+
+        double factor = 1.0;
+        // Apply positive factor if there are at least 2 consecutive blocks
+        if (maxConsecutiveBlocks >= 2)
+        {
+            factor = 1.0 - (0.05 * (maxConsecutiveBlocks - 1));
+        }
+        return (int)(currentScore * factor);
+    }
+    
+    private int HomeCheckersFactor(Player player, GameBoard board, int currentScore)
+    {
+        int homeCheckerCount = 0;
+        int start = player.Color == CheckerColor.White ? 18 : 0; // points 19-24 (White), 1-6 (Black)
+
+        var points = board.Points;
+
+        // Efficiently iterate only over home board points
+        for (int i = start; i < start + 6; i++)
+        {
+            var point = points[i];
+            if (point.Owner == player.Color)
+                homeCheckerCount += point.Checkers.Count;
+        }
+
+        double factor = 1.00 - homeCheckerCount * 0.01;
+
+        return (int)(currentScore * factor);
+    }
+    
+    private int CheckerStackPenalty(Player player, GameBoard board, int currentScore)
+    {
+        var points = board.Points;
+        int penaltyCount = 0;
+
+        // Count the number of checkers exceeding stack size of 5 per point
+        for (int i = 0; i < points.Length; i++)
+        {
+            var point = points[i];
+            if (point.Owner == player.Color && point.Checkers.Count > 5)
+            {
+                penaltyCount += (point.Checkers.Count - 5);
+            }
+        }
+
+        // Apply penalty factor: 0.02 per extra checker
+        double factor = 1.0 + penaltyCount * 0.02;
+
+        return (int)(currentScore * factor);
+    }
+
 
     
     public List<(int From, int To)> GenerateMoves(GameBoard board, Player currentPlayer, int[] diceValues)

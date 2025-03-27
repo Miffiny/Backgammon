@@ -16,7 +16,7 @@ class Program
         Console.WriteLine($"Dice rolled: {string.Join(", ", diceValues)}");
 
         // Call AI to get the best sequence of moves with depth 2
-        var ai = new AI.AI(game.CurrentPlayer, game.Board, game.Players);
+        var ai = new AI.AI(game.CurrentPlayer, game.Board, game.Players, "0");
         var bestMoveSequence = ai.GetBestMove(diceValues, 1);
 
         // Print the best move sequence

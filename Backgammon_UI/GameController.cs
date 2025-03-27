@@ -32,21 +32,22 @@ public class GameController
         _game = new Game();
     }
 
-    public void ConfigureNewGame(int mode, CheckerColor playerColor, int depth)
+    public void ConfigureNewGame(int mode, CheckerColor playerColor, int depth, string whiteConfig, string blackConfig)
     {
         // Reset last roll buffers
         _lastRollBuffer = new int[2];
         _lastRollValues = new int[2];
         LastMovesBuffer = new List<(int From, int To)>();
         CurrentTurnState = TurnState.RollingDice;
+        // Set the game mode
+        _gameMode = (GameMode)mode;
+        
         // Initialize the game instance
-        _game = new Game
+        _game = new Game(whiteConfig, blackConfig)
         {
             depth = depth
         };
         
-        // Set the game mode
-        _gameMode = (GameMode)mode;
         _humanPlayerColor = playerColor;
         if (!IsHumanTurn())
         {

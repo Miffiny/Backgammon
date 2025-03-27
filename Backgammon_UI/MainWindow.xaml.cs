@@ -143,10 +143,28 @@ namespace Backgammon_UI
                 "Random" => (new Random().Next(0, 2) == 0) ? 0 : 1,
                 _ => throw new InvalidOperationException("Invalid player side selected.")
             };
+            
+            // Generate AI factor strings
+            string whiteAIConfig = GenerateAIConfigString("White");
+            string blackAIConfig = GenerateAIConfigString("Black");
 
             // Start a new game
-            _mainFrontend.StartNewGame(mode, playerColor, depth);
+            _mainFrontend.StartNewGame(mode, playerColor, depth, whiteAIConfig, blackAIConfig);
         }
 
+        private string GenerateAIConfigString(string color)
+        {
+            var factors = new List<int>();
+
+            for (int i = 0; i <= 5; i++)
+            {
+                var checkBox = FindName($"{color}Factor{i}") as CheckBox;
+                if (checkBox?.IsChecked == true)
+                    factors.Add(i);
+            }
+
+            // Concatenate selected factors into a single string
+            return string.Join("", factors);
+        }
     }
 }
