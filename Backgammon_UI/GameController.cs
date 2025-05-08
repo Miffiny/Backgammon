@@ -12,6 +12,20 @@ public class GameController
     private int[] _lastRollValues = new int[2];
     private int[] _lastRollBuffer = new int[2];
     
+    private bool _isGamePaused;
+    private TaskCompletionSource<bool>? _resumeTcs;
+
+    public void StopGame()
+    {
+        _isGamePaused = true;
+    }
+
+    public void ResumeGame()
+    {
+        _isGamePaused = false;
+        _resumeTcs?.TrySetResult(true);
+    }
+    
     public enum TurnState
     {
         RollingDice,
@@ -71,6 +85,13 @@ public class GameController
             // Wait for player input (handled by MainFrontend)
             return;
         }
+        
+        if (_isGamePaused)
+        {
+            _resumeTcs = new TaskCompletionSource<bool>();
+            await _resumeTcs.Task; // Wait until resume is called
+        }
+        
         // Prevent re-triggering AI calculations while it's still processing
         if (_isAIProcessing) return;
         _isAIProcessing = true;
@@ -101,7 +122,7 @@ public class GameController
         if (CurrentTurnState != TurnState.RollingDice)
             throw new InvalidOperationException("Cannot roll dice outside of the RollingDice state.");
 
-        
+        if(_gameMode == GameMode.PlayerVsPlayer) LastMovesBuffer.Clear();
         _lastRollValues = _lastRollBuffer;
         _game.RollDice();
         _lastRollBuffer = _game.Dice.GetDiceValues();

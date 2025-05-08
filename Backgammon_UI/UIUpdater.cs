@@ -31,7 +31,7 @@ public class UIUpdater
 
         for (int i = 1; i <= 12; i++)
         {
-            var barSlotUI = gameBoard.FindName($"BarSlot_{i}") as StackPanel;
+            var barSlotUI = gameBoard.FindName($"BarSlot_{i}") as Grid;
             if (barSlotUI != null)
             {
                 barSlotUI.Children.Clear();
@@ -67,7 +67,7 @@ public class UIUpdater
 // Populate white player's bar slots (1-6)
         for (int i = 0; i < whiteBarCheckers.Count; i++)
         {
-            var barSlotUI = gameBoard.FindName($"BarSlot_{i + 1}") as StackPanel;
+            var barSlotUI = gameBoard.FindName($"BarSlot_{i + 1}") as Grid;
             if (barSlotUI != null)
             {
                 double checkerSize = barSlotUI.ActualWidth * 0.4; // Calculate size dynamically
@@ -75,8 +75,8 @@ public class UIUpdater
                 var checkerUI = new Ellipse
                 {
                     Width = checkerSize,
-                    Height = checkerSize, // Height equals width
-                    Fill = Brushes.White, // White checkers
+                    Height = checkerSize,
+                    Fill = Brushes.White,
                     HorizontalAlignment = HorizontalAlignment.Center,
                     VerticalAlignment = VerticalAlignment.Center
                 };
@@ -87,7 +87,7 @@ public class UIUpdater
 // Populate black player's bar slots (7-12)
         for (int i = 0; i < blackBarCheckers.Count; i++)
         {
-            var barSlotUI = gameBoard.FindName($"BarSlot_{i + 7}") as StackPanel;
+            var barSlotUI = gameBoard.FindName($"BarSlot_{i + 7}") as Grid;
             if (barSlotUI != null)
             {
                 double checkerSize = barSlotUI.ActualWidth * 0.4; // Calculate size dynamically
@@ -115,7 +115,7 @@ public class UIUpdater
 
         for (int i = 1; i <= 12; i++)
         {
-            var barSlotUI = gameBoard.FindName($"BarSlot_{i}") as StackPanel;
+            var barSlotUI = gameBoard.FindName($"BarSlot_{i}") as Grid;
             if (barSlotUI != null) barSlotUI.Background = Brushes.BurlyWood;
         }
 
@@ -130,8 +130,8 @@ public class UIUpdater
         {
             if (move.From == 0) // Highlight bar slot
             {
-                var barSlot = gameBoard.FindName($"BarSlot_{move.To}") as StackPanel;
-                if (barSlot != null) barSlot.Background = Brushes.Yellow;
+                var endPoint = gameBoard.FindName($"Point_{move.To}") as StackPanel;
+                if (endPoint != null) endPoint.Background = Brushes.LightGreen;
             }
             else if (move.To == -1) // Highlight bear off zone
             {

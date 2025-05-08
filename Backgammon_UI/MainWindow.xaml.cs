@@ -28,7 +28,7 @@ namespace Backgammon_UI
             // Attach event handlers to bar slots
             for (int i = 1; i <= 12; i++)
             {
-                var barSlotUI = FindName($"BarSlot_{i}") as StackPanel;
+                var barSlotUI = FindName($"BarSlot_{i}") as Grid;
                 if (barSlotUI != null)
                 {
                     barSlotUI.MouseLeftButtonDown += BarSlot_Click;
@@ -56,7 +56,7 @@ namespace Backgammon_UI
         
         private void BarSlot_Click(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            if (sender is StackPanel barSlotUI)
+            if (sender is Grid barSlotUI)
             {
                 // Get the clicked bar slot index
                 int barIndex = int.Parse(barSlotUI.Name.Split('_')[1]);
@@ -99,6 +99,20 @@ namespace Backgammon_UI
         {
             _mainFrontend.RollDice();
             _mainFrontend.UpdateUI(); // Update the UI after rolling dice
+        }
+        
+        private void StopButton_Click(object sender, RoutedEventArgs e)
+        {
+            _mainFrontend.StopGame();
+            StopButton.IsEnabled = false;
+            ResumeButton.IsEnabled = true;
+        }
+
+        private void ResumeButton_Click(object sender, RoutedEventArgs e)
+        {
+            _mainFrontend.ResumeGame();
+            ResumeButton.IsEnabled = false;
+            StopButton.IsEnabled = true;
         }
 
         private void NewGameButton_Click(object sender, RoutedEventArgs e)

@@ -13,57 +13,169 @@
         <Grid Grid.Column="0" Background="Tan" Margin="10" Name="GameBoard">
             <!-- Define the rows for the board -->
             <Grid.RowDefinitions>
-                <RowDefinition Height="4*" /> <!-- Top row -->
-                <RowDefinition Height="1*" /> <!-- Bar row -->
-                <RowDefinition Height="4*" /> <!-- Bottom row -->
+                <RowDefinition Height="Auto" />   <!-- Top index row -->
+                <RowDefinition Height="4*" />     <!-- Top checkers -->
+                <RowDefinition Height="1*" />     <!-- Bar -->
+                <RowDefinition Height="4*" />     <!-- Bottom checkers -->
+                <RowDefinition Height="Auto" />   <!-- Bottom index row -->
             </Grid.RowDefinitions>
+            
+            <!-- Top row index: 13-24 -->
+            <UniformGrid Grid.Row="0" Columns="12" Background= "LightGray">
+                <UniformGrid.Resources>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="FontSize" Value="15"/>
+                        <Setter Property="FontWeight" Value="Bold"/>
+                        <Setter Property="HorizontalAlignment" Value="Center"/>
+                        <Setter Property="Foreground" Value="DarkSlateGray"/>
+                    </Style>
+                </UniformGrid.Resources>
+                <TextBlock Text="13" HorizontalAlignment="Center"/>
+                <TextBlock Text="14" HorizontalAlignment="Center"/>
+                <TextBlock Text="15" HorizontalAlignment="Center"/>
+                <TextBlock Text="16" HorizontalAlignment="Center"/>
+                <TextBlock Text="17" HorizontalAlignment="Center"/>
+                <TextBlock Text="18" HorizontalAlignment="Center"/>
+                <TextBlock Text="19" HorizontalAlignment="Center"/>
+                <TextBlock Text="20" HorizontalAlignment="Center"/>
+                <TextBlock Text="21" HorizontalAlignment="Center"/>
+                <TextBlock Text="22" HorizontalAlignment="Center"/>
+                <TextBlock Text="23" HorizontalAlignment="Center"/>
+                <TextBlock Text="24" HorizontalAlignment="Center"/>
+            </UniformGrid>
 
             <!-- Top Row: Points 13 to 24 -->
-            <UniformGrid Grid.Row="0" Columns="12" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                <StackPanel Name="Point_13" Orientation="Vertical" Background="SaddleBrown" />
-                <StackPanel Name="Point_14" Orientation="Vertical" Background="SaddleBrown" />
-                <StackPanel Name="Point_15" Orientation="Vertical" Background="SaddleBrown" />
-                <StackPanel Name="Point_16" Orientation="Vertical" Background="SaddleBrown" />
-                <StackPanel Name="Point_17" Orientation="Vertical" Background="SaddleBrown" />
-                <StackPanel Name="Point_18" Orientation="Vertical" Background="SaddleBrown" />
-                <StackPanel Name="Point_19" Orientation="Vertical" Background="SaddleBrown" />
-                <StackPanel Name="Point_20" Orientation="Vertical" Background="SaddleBrown" />
-                <StackPanel Name="Point_21" Orientation="Vertical" Background="SaddleBrown" />
-                <StackPanel Name="Point_22" Orientation="Vertical" Background="SaddleBrown" />
-                <StackPanel Name="Point_23" Orientation="Vertical" Background="SaddleBrown" />
-                <StackPanel Name="Point_24" Orientation="Vertical" Background="SaddleBrown" />
-            </UniformGrid>
+            <Grid Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                <!-- Define 12 equal columns -->
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <!-- Points 13 to 18 (no border needed) -->
+                <StackPanel Name="Point_13" Orientation="Vertical" Background="SaddleBrown" Grid.Column="0" />
+                <StackPanel Name="Point_14" Orientation="Vertical" Background="SaddleBrown" Grid.Column="1" />
+                <StackPanel Name="Point_15" Orientation="Vertical" Background="SaddleBrown" Grid.Column="2" />
+                <StackPanel Name="Point_16" Orientation="Vertical" Background="SaddleBrown" Grid.Column="3" />
+                <StackPanel Name="Point_17" Orientation="Vertical" Background="SaddleBrown" Grid.Column="4" />
+                <StackPanel Name="Point_18" Orientation="Vertical" Background="SaddleBrown" Grid.Column="5" />
+
+                <!-- Points 19 to 24 with a green border wrapping the group -->
+                <Border BorderBrush="WhiteSmoke" BorderThickness="2" Grid.Column="6" Grid.ColumnSpan="6">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Name="Point_19" Orientation="Vertical" Background="SaddleBrown" Grid.Column="0" />
+                        <StackPanel Name="Point_20" Orientation="Vertical" Background="SaddleBrown" Grid.Column="1" />
+                        <StackPanel Name="Point_21" Orientation="Vertical" Background="SaddleBrown" Grid.Column="2" />
+                        <StackPanel Name="Point_22" Orientation="Vertical" Background="SaddleBrown" Grid.Column="3" />
+                        <StackPanel Name="Point_23" Orientation="Vertical" Background="SaddleBrown" Grid.Column="4" />
+                        <StackPanel Name="Point_24" Orientation="Vertical" Background="SaddleBrown" Grid.Column="5" />
+                    </Grid>
+                </Border>
+            </Grid>
 
             <!-- Bar Row -->
-            <UniformGrid Grid.Row="1" Columns="12" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                <StackPanel Name="BarSlot_1" Orientation="Vertical" Background="BurlyWood" />
-                <StackPanel Name="BarSlot_2" Orientation="Vertical" Background="BurlyWood" />
-                <StackPanel Name="BarSlot_3" Orientation="Vertical" Background="BurlyWood" />
-                <StackPanel Name="BarSlot_4" Orientation="Vertical" Background="BurlyWood" />
-                <StackPanel Name="BarSlot_5" Orientation="Vertical" Background="BurlyWood" />
-                <StackPanel Name="BarSlot_6" Orientation="Vertical" Background="BurlyWood" />
-                <StackPanel Name="BarSlot_7" Orientation="Vertical" Background="BurlyWood" />
-                <StackPanel Name="BarSlot_8" Orientation="Vertical" Background="BurlyWood" />
-                <StackPanel Name="BarSlot_9" Orientation="Vertical" Background="BurlyWood" />
-                <StackPanel Name="BarSlot_10" Orientation="Vertical" Background="BurlyWood" />
-                <StackPanel Name="BarSlot_11" Orientation="Vertical" Background="BurlyWood" />
-                <StackPanel Name="BarSlot_12" Orientation="Vertical" Background="BurlyWood" />
+            <UniformGrid Grid.Row="2" Columns="12" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                <Grid Name="BarSlot_1" Background="BurlyWood" />
+                <Grid Name="BarSlot_2" Background="BurlyWood" />
+                <Grid Name="BarSlot_3" Background="BurlyWood" />
+                <Grid Name="BarSlot_4" Background="BurlyWood" />
+                <Grid Name="BarSlot_5" Background="BurlyWood" />
+                <Grid Name="BarSlot_6" Background="BurlyWood" />
+                <Grid Name="BarSlot_7" Background="BurlyWood" />
+                <Grid Name="BarSlot_8" Background="BurlyWood" />
+                <Grid Name="BarSlot_9" Background="BurlyWood" />
+                <Grid Name="BarSlot_10" Background="BurlyWood" />
+                <Grid Name="BarSlot_11" Background="BurlyWood" />
+                <Grid Name="BarSlot_12" Background="BurlyWood" />
             </UniformGrid>
 
-            <!-- Bottom Row: Points 1 to 12 -->
-            <UniformGrid Grid.Row="2" Columns="12" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                <StackPanel Name="Point_12" Orientation="Vertical" Background="SaddleBrown" />
-                <StackPanel Name="Point_11" Orientation="Vertical" Background="SaddleBrown" />
-                <StackPanel Name="Point_10" Orientation="Vertical" Background="SaddleBrown" />
-                <StackPanel Name="Point_9" Orientation="Vertical" Background="SaddleBrown" />
-                <StackPanel Name="Point_8" Orientation="Vertical" Background="SaddleBrown" />
-                <StackPanel Name="Point_7" Orientation="Vertical" Background="SaddleBrown" />
-                <StackPanel Name="Point_6" Orientation="Vertical" Background="SaddleBrown" />
-                <StackPanel Name="Point_5" Orientation="Vertical" Background="SaddleBrown" />
-                <StackPanel Name="Point_4" Orientation="Vertical" Background="SaddleBrown" />
-                <StackPanel Name="Point_3" Orientation="Vertical" Background="SaddleBrown" />
-                <StackPanel Name="Point_2" Orientation="Vertical" Background="SaddleBrown" />
-                <StackPanel Name="Point_1" Orientation="Vertical" Background="SaddleBrown" />
+           <!-- Bottom Row: Points 1 to 12 -->
+            <Grid Grid.Row="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                <!-- Define 12 equal columns -->
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <!-- Points 12 to 7 -->
+                <StackPanel Name="Point_12" Orientation="Vertical" Background="SaddleBrown" Grid.Column="0" />
+                <StackPanel Name="Point_11" Orientation="Vertical" Background="SaddleBrown" Grid.Column="1" />
+                <StackPanel Name="Point_10" Orientation="Vertical" Background="SaddleBrown" Grid.Column="2" />
+                <StackPanel Name="Point_9" Orientation="Vertical" Background="SaddleBrown" Grid.Column="3" />
+                <StackPanel Name="Point_8" Orientation="Vertical" Background="SaddleBrown" Grid.Column="4" />
+                <StackPanel Name="Point_7" Orientation="Vertical" Background="SaddleBrown" Grid.Column="5" />
+
+                <!-- Points 6 to 1 with a green border wrapping the group -->
+                <Border BorderBrush="Black" BorderThickness="3" Grid.Column="6" Grid.ColumnSpan="6">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Name="Point_6" Orientation="Vertical" Background="SaddleBrown" Grid.Column="0" />
+                        <StackPanel Name="Point_5" Orientation="Vertical" Background="SaddleBrown" Grid.Column="1" />
+                        <StackPanel Name="Point_4" Orientation="Vertical" Background="SaddleBrown" Grid.Column="2" />
+                        <StackPanel Name="Point_3" Orientation="Vertical" Background="SaddleBrown" Grid.Column="3" />
+                        <StackPanel Name="Point_2" Orientation="Vertical" Background="SaddleBrown" Grid.Column="4" />
+                        <StackPanel Name="Point_1" Orientation="Vertical" Background="SaddleBrown" Grid.Column="5" />
+                    </Grid>
+                </Border>
+            </Grid>
+            
+            <!-- Bottom row index: 12-1 -->
+            <UniformGrid Grid.Row="4" Columns="12" Background="LightGray">
+                <UniformGrid.Resources>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="FontSize" Value="15"/>
+                        <Setter Property="FontWeight" Value="Bold"/>
+                        <Setter Property="HorizontalAlignment" Value="Center"/>
+                        <Setter Property="Foreground" Value="DarkSlateGray"/>
+                    </Style>
+                </UniformGrid.Resources>
+                <TextBlock Text="12" HorizontalAlignment="Center"/>
+                <TextBlock Text="11" HorizontalAlignment="Center"/>
+                <TextBlock Text="10" HorizontalAlignment="Center"/>
+                <TextBlock Text="9" HorizontalAlignment="Center"/>
+                <TextBlock Text="8" HorizontalAlignment="Center"/>
+                <TextBlock Text="7" HorizontalAlignment="Center"/>
+                <TextBlock Text="6" HorizontalAlignment="Center"/>
+                <TextBlock Text="5" HorizontalAlignment="Center"/>
+                <TextBlock Text="4" HorizontalAlignment="Center"/>
+                <TextBlock Text="3" HorizontalAlignment="Center"/>
+                <TextBlock Text="2" HorizontalAlignment="Center"/>
+                <TextBlock Text="1" HorizontalAlignment="Center"/>
             </UniformGrid>
         </Grid>
         
@@ -78,7 +190,12 @@
             <TextBlock Name="LastRoll2" Text="Last Roll 2: -" FontSize="18" Margin="5" />
             
             <!-- Roll Dice Button -->
-            <Button Name="RollDiceButton" Content="Roll Dice" FontSize="16" Margin="5" Width="100" Click="RollDiceButton_Click" />
+            
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button Name="RollDiceButton" Content="Roll Dice" FontSize="16" Margin="5" Width="100" Click="RollDiceButton_Click" />
+                <Button Name="StopButton" Content="Stop" Click="StopButton_Click" Margin="5"/>
+                <Button Name="ResumeButton" Content="Resume" Click="ResumeButton_Click" Margin="5" IsEnabled="False"/>
+            </StackPanel>
             
             <!-- Game Configuration -->
             <Grid Margin="10">
@@ -109,6 +226,7 @@
                         <ComboBoxItem Content="0"/>
                         <ComboBoxItem Content="1"/>
                         <ComboBoxItem Content="2"/>
+                        <ComboBoxItem Content="3"/>
                     </ComboBox>
                 </StackPanel>
 
@@ -119,6 +237,7 @@
                     <CheckBox Name="WhiteFactor1" Content="Prime" Margin="3"/>
                     <CheckBox Name="WhiteFactor2" Content="Home" Margin="3"/>
                     <CheckBox Name="WhiteFactor3" Content="Stack" Margin="3"/>
+                    <CheckBox Name="WhiteFactor4" Content="Dead" Margin="3"/>
                 </StackPanel>
 
                 <!-- Right Column: Black AI Config -->
@@ -128,6 +247,7 @@
                     <CheckBox Name="BlackFactor1" Content="Prime" Margin="3"/>
                     <CheckBox Name="BlackFactor2" Content="Home" Margin="3"/>
                     <CheckBox Name="BlackFactor3" Content="Stack" Margin="3"/>
+                    <CheckBox Name="BlackFactor4" Content="Dead" Margin="3"/>
                 </StackPanel>
             </Grid>
             

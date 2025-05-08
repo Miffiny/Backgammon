@@ -65,6 +65,9 @@ namespace Backgammon_UI
             _gameController.RollDice();
             UpdateUI();
         }
+        
+        public void StopGame() => _gameController.StopGame();
+        public void ResumeGame() => _gameController.ResumeGame();
 
          public void HandlePointClick(int pointIndex)
         {
@@ -120,7 +123,7 @@ namespace Backgammon_UI
             _selectedPoint = 0;
 
             // Highlight the selected bar slot
-            var barSlotUI = _gameBoard.FindName($"BarSlot_{barIndex}") as StackPanel;
+            var barSlotUI = _gameBoard.FindName($"BarSlot_{barIndex}") as Grid;
             if (barSlotUI != null)
             {
                 barSlotUI.Background = Brushes.DarkGray;
