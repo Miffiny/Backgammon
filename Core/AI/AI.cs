@@ -1,11 +1,13 @@
-﻿namespace Core.AI;
+﻿using System.Collections.Concurrent;
+
+namespace Core.AI;
 
 public class AI
 {
     private readonly Player _aiPlayer;
     private readonly GameBoard _board;
     private readonly Player[] _players;
-    private Dictionary<string, List<(int From, int To)>> stateToMoves;
+    private ConcurrentDictionary<string, List<(int From, int To)>> stateToMoves;
     public int Alpha = Int32.MinValue;
     public int Beta = Int32.MaxValue;
     
@@ -17,7 +19,7 @@ public class AI
         _aiPlayer = aiPlayer;
         _board = board;
         _players = players;
-        stateToMoves = new Dictionary<string, List<(int From, int To)>>();
+        stateToMoves = new ConcurrentDictionary<string, List<(int From, int To)>>();
 
         evaluationFactors = new List<Func<Player, GameBoard, int, int>>();
         
@@ -36,6 +38,9 @@ public class AI
                     break;
                 case '3':
                     evaluationFactors.Add(CheckerStackPenalty);
+                    break;
+                case '4':
+                    evaluationFactors.Add(DeadCheckerPenalty);
                     break;
             }
         }
@@ -65,7 +70,6 @@ public class AI
             Console.WriteLine($"Check move {moveNumber} out of {uniqueStates.Count}");
             Console.WriteLine(stateToMoves.Count);
             moveNumber++;
-            // Evaluate each state using ExpectMiniMax (with Alpha-Beta parameters)
             int score = ExpectiMiniMax(state, depth, false, GetOpponent(_aiPlayer));
             if (score > bestScore)
             {
@@ -85,31 +89,40 @@ public class AI
 
     private int ExpectiMiniMax(GameBoard board, int depth, bool maximizingPlayer, Player currentPlayer)
     {
-        // Terminal condition: lowest level (or node is terminal)
         if (depth == 0)
         {
             return EvaluateBoard(currentPlayer, board);
         }
 
-        // At this level, randomness is introduced by the dice roll.
-        // Generate all dice outcomes.
         var diceOutcomes = GenerateAllDiceOutcomes();
+        var tasks = new List<Task<(int value, int frequency)>>();
+
+        foreach (var diceOutcome in diceOutcomes)
+        {
+            int frequency = (diceOutcome.Length == 2 && diceOutcome[0] != diceOutcome[1]) ? 2 : 1;
+
+            tasks.Add(Task.Run(() =>
+            {
+                int outcomeValue = MinimaxForDiceOutcome(board, depth, maximizingPlayer, currentPlayer, diceOutcome);
+                return (outcomeValue, frequency);
+            }));
+        }
+
+        Task.WaitAll(tasks.ToArray());
+
         int totalValue = 0;
         int totalFrequency = 0;
 
-        // For each dice outcome, compute a deterministic minimax value (with Alpha-Beta pruning).
-        foreach (var diceOutcome in diceOutcomes)
+        foreach (var task in tasks)
         {
-            // Non-doubles (two different values) occur twice; doubles occur once.
-            int frequency = diceOutcome.Length == 2 && diceOutcome[0] != diceOutcome[1] ? 2 : 1;
-            int outcomeValue = MinimaxForDiceOutcome(board, depth, maximizingPlayer, currentPlayer, diceOutcome);
-            totalValue += frequency * outcomeValue;
+            var (value, frequency) = task.Result;
+            totalValue += frequency * value;
             totalFrequency += frequency;
         }
 
-        // Return the weighted average.
-        if (totalFrequency == 0) return maximizingPlayer ? int.MinValue : int.MaxValue;
-        return totalValue / totalFrequency;
+        return totalFrequency == 0
+            ? (maximizingPlayer ? int.MinValue : int.MaxValue)
+            : totalValue / totalFrequency;
     }
 
     private int MinimaxForDiceOutcome(GameBoard board, int depth, bool maximizingPlayer, Player currentPlayer, int[] diceOutcome)
@@ -181,9 +194,9 @@ public class AI
         {
             var point = points[i];
             if (point.Owner == CheckerColor.White)
-                whiteDistance += (25 - point.Index) * point.Checkers.Count;
+                whiteDistance += (25 - (i + 1)) * point.Checkers.Count;
             else if (point.Owner == CheckerColor.Black)
-                blackDistance += point.Index * point.Checkers.Count;
+                blackDistance += (i + 1) * point.Checkers.Count;
         }
 
         // Apply evaluation factors independently to each player's score
@@ -203,9 +216,9 @@ public class AI
         }
 
         // Return evaluation from current player's perspective
-        return currentPlayer.Color == CheckerColor.White
-            ? whiteDistance - blackDistance
-            : blackDistance - whiteDistance;
+        return _aiPlayer.Color == CheckerColor.White
+            ? blackDistance - whiteDistance
+            : whiteDistance - blackDistance;
     }
     
     private int BlotFactor(Player player, GameBoard board, int currentScore)
@@ -299,7 +312,35 @@ public class AI
 
         return (int)(currentScore * factor);
     }
+    
+    private int DeadCheckerPenalty(Player player, GameBoard board, int currentScore)
+    {
+        var points = board.Points;
+        int penaltyCount = 0;
+        
+        if (player.Color == CheckerColor.Black)
+        {
+            for (int i = 0; i < 2; i++)
+            {
+                var point = points[i];
+                if (point.Checkers.Count > 3) penaltyCount += point.Checkers.Count - 3;
+            }
+        }
+        
+        if (player.Color == CheckerColor.White)
+        {
+            for (int i = 22; i < 24; i++)
+            {
+                var point = points[i];
+                if (point.Checkers.Count > 3) penaltyCount += point.Checkers.Count - 3;
+            }
+        }
 
+        // Apply penalty factor: 0.03 per extra checker
+        double factor = 1.0 + penaltyCount * 0.03;
+
+        return (int)(currentScore * factor);
+    }
 
     
     public List<(int From, int To)> GenerateMoves(GameBoard board, Player currentPlayer, int[] diceValues)
@@ -410,7 +451,7 @@ public class AI
 
                 if (!stateToMoves.ContainsKey(stateHash))
                 {
-                    stateToMoves[stateHash] = newMoves;
+                    stateToMoves.TryAdd(stateHash, newMoves);
                     currentCallStates.Add(stateHash); // Track this state
                     Recurse(simulatedBoard, newDiceValues, newMoves);
                 }
@@ -424,7 +465,7 @@ public class AI
         {
             if (!uniqueStates.Any(state => HashBoardState(state) == stateHash))
             {
-                stateToMoves.Remove(stateHash);
+                stateToMoves.TryRemove(stateHash, out _);
             }
         }
 
