@@ -323,7 +323,7 @@ public class AI
             for (int i = 0; i < 2; i++)
             {
                 var point = points[i];
-                if (point.Checkers.Count > 3) penaltyCount += point.Checkers.Count - 3;
+                if (point.Checkers.Count > 2) penaltyCount += point.Checkers.Count - 2;
             }
         }
         
@@ -332,7 +332,7 @@ public class AI
             for (int i = 22; i < 24; i++)
             {
                 var point = points[i];
-                if (point.Checkers.Count > 3) penaltyCount += point.Checkers.Count - 3;
+                if (point.Checkers.Count > 2) penaltyCount += point.Checkers.Count - 2;
             }
         }
 
