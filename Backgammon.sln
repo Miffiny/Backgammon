@@ -2,7 +2,7 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "Core\Core.csproj", "{B329D3FA-DEC6-4D09-AA39-472EC4C894A9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Backgammon_UI", "Backgammon_UI\Backgammon_UI.csproj", "{16F59DF4-FD6F-4F43-B261-A8CA000E3A23}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Backgammon", "Backgammon\Backgammon.csproj", "{16F59DF4-FD6F-4F43-B261-A8CA000E3A23}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

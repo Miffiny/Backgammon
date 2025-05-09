@@ -193,8 +193,8 @@
             
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                 <Button Name="RollDiceButton" Content="Roll Dice" FontSize="16" Margin="5" Width="100" Click="RollDiceButton_Click" />
-                <Button Name="StopButton" Content="Stop" Click="StopButton_Click" Margin="5"/>
-                <Button Name="ResumeButton" Content="Resume" Click="ResumeButton_Click" Margin="5" IsEnabled="False"/>
+                <Button Name="StopButton" Content="Stop" Margin="5" Width="75" Click="StopButton_Click" Visibility="Collapsed"/>
+                <Button Name="ResumeButton" Content="Resume" Margin="5" Width="75" Click="ResumeButton_Click" Visibility="Collapsed" IsEnabled="False"/>
             </StackPanel>
             
             <!-- Game Configuration -->
@@ -206,48 +206,48 @@
                 </Grid.ColumnDefinitions>
 
                 <!-- Left Column: Game Configuration -->
-                <StackPanel Grid.Column="0" Margin="5">
+                <StackPanel Grid.Column="0" Grid.ColumnSpan="3" Margin="5" Name="GameConfigPanel">
                     <TextBlock Text="Game Mode:" FontSize="16" Margin="5"/>
-                    <ComboBox Name="GameModeComboBox" Margin="5">
+                    <ComboBox Name="GameModeComboBox" Margin="5" SelectionChanged="GameModeComboBox_SelectionChanged">
                         <ComboBoxItem Content="Player vs Player"/>
                         <ComboBoxItem Content="Player vs AI"/>
                         <ComboBoxItem Content="AI vs AI"/>
                     </ComboBox>
 
-                    <TextBlock Text="Side:" FontSize="16" Margin="5"/>
-                    <ComboBox Name="PlayerSideComboBox" Margin="5">
+                    <TextBlock Name="SideLabel" Text="Side:" FontSize="16" Margin="5" Visibility="Collapsed"/>
+                    <ComboBox Name="PlayerSideComboBox" Margin="5" Visibility="Collapsed">
                         <ComboBoxItem Content="White"/>
                         <ComboBoxItem Content="Black"/>
                         <ComboBoxItem Content="Random"/>
                     </ComboBox>
 
-                    <TextBlock Text="AI Depth:" FontSize="16" Margin="5"/>
-                    <ComboBox Name="AIDepthComboBox" Margin="5">
-                        <ComboBoxItem Content="0"/>
+                    <TextBlock Name="AIDepthLabel" Text="AI Depth:" FontSize="16" Margin="5" Visibility="Collapsed"/>
+                    <ComboBox Name="AIDepthComboBox" Margin="5" Visibility="Collapsed">
                         <ComboBoxItem Content="1"/>
                         <ComboBoxItem Content="2"/>
                         <ComboBoxItem Content="3"/>
+                        <ComboBoxItem Content="4"/>
                     </ComboBox>
                 </StackPanel>
 
                 <!-- Middle Column: White AI Config -->
-                <StackPanel Grid.Column="1" Margin="5">
-                    <TextBlock Text="White AI Factors:" FontSize="16" Margin="5"/>
-                    <CheckBox Name="WhiteFactor0" Content="Blots" Margin="3"/>
-                    <CheckBox Name="WhiteFactor1" Content="Prime" Margin="3"/>
-                    <CheckBox Name="WhiteFactor2" Content="Home" Margin="3"/>
-                    <CheckBox Name="WhiteFactor3" Content="Stack" Margin="3"/>
-                    <CheckBox Name="WhiteFactor4" Content="Dead" Margin="3"/>
+                <StackPanel Grid.Column="1" Margin="5" Name="WhiteFactorsPanel" Visibility="Collapsed">
+                    <TextBlock Name="WhiteFactorsLabel" Text="White AI Factors:" FontSize="16" Margin="5" Visibility="Collapsed"/>
+                    <CheckBox Name="WhiteFactor0" Content="Blots" Margin="3" Visibility="Collapsed"/>
+                    <CheckBox Name="WhiteFactor1" Content="Prime" Margin="3" Visibility="Collapsed"/>
+                    <CheckBox Name="WhiteFactor2" Content="Home" Margin="3" Visibility="Collapsed"/>
+                    <CheckBox Name="WhiteFactor3" Content="Stack" Margin="3" Visibility="Collapsed"/>
+                    <CheckBox Name="WhiteFactor4" Content="Dead" Margin="3" Visibility="Collapsed"/>
                 </StackPanel>
 
                 <!-- Right Column: Black AI Config -->
-                <StackPanel Grid.Column="2" Margin="5">
-                    <TextBlock Text="Black AI Factors:" FontSize="16" Margin="5"/>
-                    <CheckBox Name="BlackFactor0" Content="Blots" Margin="3"/>
-                    <CheckBox Name="BlackFactor1" Content="Prime" Margin="3"/>
-                    <CheckBox Name="BlackFactor2" Content="Home" Margin="3"/>
-                    <CheckBox Name="BlackFactor3" Content="Stack" Margin="3"/>
-                    <CheckBox Name="BlackFactor4" Content="Dead" Margin="3"/>
+                <StackPanel Grid.Column="2" Margin="5" Name="BlackFactorsPanel" Visibility="Collapsed">
+                    <TextBlock Name="BlackFactorsLabel" Text="Black AI Factors:" FontSize="16" Margin="5" Visibility="Collapsed"/>
+                    <CheckBox Name="BlackFactor0" Content="Blots" Margin="3" Visibility="Collapsed"/>
+                    <CheckBox Name="BlackFactor1" Content="Prime" Margin="3" Visibility="Collapsed"/>
+                    <CheckBox Name="BlackFactor2" Content="Home" Margin="3" Visibility="Collapsed"/>
+                    <CheckBox Name="BlackFactor3" Content="Stack" Margin="3" Visibility="Collapsed"/>
+                    <CheckBox Name="BlackFactor4" Content="Dead" Margin="3" Visibility="Collapsed"/>
                 </StackPanel>
             </Grid>
             

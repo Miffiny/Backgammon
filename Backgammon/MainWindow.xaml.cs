@@ -105,14 +105,67 @@ namespace Backgammon_UI
         {
             _mainFrontend.StopGame();
             StopButton.IsEnabled = false;
+            RollDiceButton.IsEnabled = false;
             ResumeButton.IsEnabled = true;
         }
 
         private void ResumeButton_Click(object sender, RoutedEventArgs e)
         {
             _mainFrontend.ResumeGame();
+            RollDiceButton.IsEnabled = true;
             ResumeButton.IsEnabled = false;
             StopButton.IsEnabled = true;
+        }
+        
+        private void GameModeComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (GameModeComboBox.SelectedItem is ComboBoxItem selectedItem)
+            {
+                string? selectedMode = selectedItem.Content.ToString();
+
+                bool isPvAI = selectedMode == "Player vs AI";
+                bool isAIvsAI = selectedMode == "AI vs AI";
+                bool isPvP = selectedMode == "Player vs Player";
+                bool isAIInvolved = !isPvP;
+
+                // Show/hide side and depth
+                SideLabel.Visibility = isPvAI ? Visibility.Visible : Visibility.Collapsed;
+                PlayerSideComboBox.Visibility = isPvAI ? Visibility.Visible : Visibility.Collapsed;
+
+                AIDepthLabel.Visibility = isAIInvolved ? Visibility.Visible : Visibility.Collapsed;
+                AIDepthComboBox.Visibility = isAIInvolved ? Visibility.Visible : Visibility.Collapsed;
+
+                // Roll Dice button only in PvP and PvAI
+                RollDiceButton.Visibility = isAIvsAI ? Visibility.Collapsed : Visibility.Visible;
+
+                // Stop/Resume only in AI vs AI
+                StopButton.Visibility = isAIvsAI ? Visibility.Visible : Visibility.Collapsed;
+                ResumeButton.Visibility = isAIvsAI ? Visibility.Visible : Visibility.Collapsed;
+
+                bool showAIConfig = !isPvP;
+
+                var whiteFactorElements = new List<UIElement>
+                {
+                    WhiteFactorsPanel, WhiteFactorsLabel,
+                    WhiteFactor0, WhiteFactor1, WhiteFactor2, WhiteFactor3, WhiteFactor4
+                };
+
+                var blackFactorElements = new List<UIElement>
+                {
+                    BlackFactorsPanel, BlackFactorsLabel,
+                    BlackFactor0, BlackFactor1, BlackFactor2, BlackFactor3, BlackFactor4
+                };
+
+                foreach (var element in whiteFactorElements.Concat(blackFactorElements))
+                {
+                    element.Visibility = showAIConfig ? Visibility.Visible : Visibility.Collapsed;
+                }
+                
+                GameConfigPanel.SetValue(Grid.ColumnSpanProperty,
+                    (isPvP) ? 3 : 1); // Center if middle and right panels are hidden
+
+                GameConfigPanel.SetValue(Grid.ColumnProperty, 0); // Ensure it stays in first column
+            }
         }
 
         private void NewGameButton_Click(object sender, RoutedEventArgs e)
@@ -121,16 +174,14 @@ namespace Backgammon_UI
             string? selectedMode = (GameModeComboBox.SelectedItem as ComboBoxItem)?.Content.ToString();
             if (string.IsNullOrEmpty(selectedMode))
             {
-                _mainFrontend.NotifyUser("Please select a game mode.");
-                return;
+                selectedMode = "Player vs Player";
             }
 
             // Get selected side
             string? selectedSide = (PlayerSideComboBox.SelectedItem as ComboBoxItem)?.Content.ToString();
             if (string.IsNullOrEmpty(selectedSide))
             {
-                _mainFrontend.NotifyUser("Please select a side.");
-                return;
+                selectedSide = "Random";
             }
 
             // Get selected AI depth
@@ -138,7 +189,7 @@ namespace Backgammon_UI
             int depth = 0;
             if (!string.IsNullOrEmpty(selectedDepth))
             {
-                depth = int.Parse(selectedDepth);
+                depth = int.Parse(selectedDepth) - 1;
             }
 
             // Configure GameController based on selection
@@ -181,4 +232,6 @@ namespace Backgammon_UI
             return string.Join("", factors);
         }
     }
+    
+    
 }
