@@ -1,6 +1,4 @@
 ﻿namespace Core;
-
-// Core/Checker.cs
 public class Checker
 {
     public int Position { get; set; }

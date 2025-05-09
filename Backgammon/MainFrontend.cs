@@ -41,8 +41,7 @@ namespace Backgammon_UI
             _rollDiceButton = rollDiceButton;
             _whiteBearOffZone = whiteBearOffZone;
             _blackBearOffZone = blackBearOffZone;
-
-            // Subscribe to game updates
+            
             _gameController.OnGameUpdated += UpdateUI;
 
             StartNewGame(0,0,0, "", "");
@@ -71,7 +70,6 @@ namespace Backgammon_UI
 
          public void HandlePointClick(int pointIndex)
         {
-            // Ensure the game mode is not AI vs AI and the current player is a human
             
             if (_selectedPoint == null)
             {
@@ -95,7 +93,7 @@ namespace Backgammon_UI
                     // Notify user to roll dice first if applicable
                     NotifyUser("Invalid move or roll the dice first.");
                 }
-                ResetSelection(); // Reset after move
+                ResetSelection();
             }
         }
          
@@ -103,8 +101,7 @@ namespace Backgammon_UI
         {
             if (_gameBoard == null)
                 return;
-
-            // Determine the color of the checker in the bar slot
+            
             var checkerColor = barIndex <= 6 ? CheckerColor.White : CheckerColor.Black;
 
             // Compare checker color with the current player
@@ -228,8 +225,7 @@ namespace Backgammon_UI
 
             if (_gameBoard == null || _whiteBearOffZone == null || _blackBearOffZone == null)
                 return;
-
-            // Delegate resetting all highlights to UIUpdater
+            
             _uiUpdater.ResetHighlights(_gameBoard, _whiteBearOffZone, _blackBearOffZone);
 
             // Highlight the last moves using the buffer
@@ -248,7 +244,6 @@ namespace Backgammon_UI
         
         public void NotifyUser(string message)
         {
-            // Example: Display a message box or update a notification panel
             System.Windows.MessageBox.Show(message, "Game Notification", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
         }
         

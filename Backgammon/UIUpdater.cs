@@ -16,8 +16,7 @@ public class UIUpdater
             if (pointUI != null)
             {
                 pointUI.Children.Clear();
-
-                // Apply vertical mirroring for bottom row points
+                
                 if (i >= 1 && i <= 12) // Bottom row points
                 {
                     pointUI.LayoutTransform = new ScaleTransform(1, -1); // Flip vertically
@@ -44,7 +43,7 @@ public class UIUpdater
             var pointUI = gameBoard.FindName($"Point_{point.Index}") as StackPanel;
             if (pointUI != null)
             {
-                double checkerSize = pointUI.ActualWidth * 0.5; // Calculate size dynamically
+                double checkerSize = pointUI.ActualWidth * 0.5;
 
                 foreach (var checker in point.Checkers)
                 {
@@ -55,14 +54,14 @@ public class UIUpdater
                         Fill = checker.Color == CheckerColor.White ? Brushes.White : Brushes.Black,
                         Margin = new Thickness(2) // Defines the gap between checkers
                     };
-                    pointUI.Children.Add(checkerUI); // Add checkers normally
+                    pointUI.Children.Add(checkerUI);
                 }
             }
         }
 
         // Populate bar slots
-        var whiteBarCheckers = game.Board.WhiteBar; // White player checkers (1-6)
-        var blackBarCheckers = game.Board.BlackBar; // Black player checkers (7-12)
+        var whiteBarCheckers = game.Board.WhiteBar;
+        var blackBarCheckers = game.Board.BlackBar;
 
 // Populate white player's bar slots (1-6)
         for (int i = 0; i < whiteBarCheckers.Count; i++)
@@ -70,7 +69,7 @@ public class UIUpdater
             var barSlotUI = gameBoard.FindName($"BarSlot_{i + 1}") as Grid;
             if (barSlotUI != null)
             {
-                double checkerSize = barSlotUI.ActualWidth * 0.4; // Calculate size dynamically
+                double checkerSize = barSlotUI.ActualWidth * 0.5; // Calculate size dynamically
         
                 var checkerUI = new Ellipse
                 {
@@ -83,20 +82,19 @@ public class UIUpdater
                 barSlotUI.Children.Add(checkerUI);
             }
         }
-
-// Populate black player's bar slots (7-12)
+        
         for (int i = 0; i < blackBarCheckers.Count; i++)
         {
             var barSlotUI = gameBoard.FindName($"BarSlot_{i + 7}") as Grid;
             if (barSlotUI != null)
             {
-                double checkerSize = barSlotUI.ActualWidth * 0.4; // Calculate size dynamically
+                double checkerSize = barSlotUI.ActualWidth * 0.5;
         
                 var checkerUI = new Ellipse
                 {
                     Width = checkerSize,
-                    Height = checkerSize, // Height equals width
-                    Fill = Brushes.Black, // Black checkers
+                    Height = checkerSize,
+                    Fill = Brushes.Black, 
                     HorizontalAlignment = HorizontalAlignment.Center,
                     VerticalAlignment = VerticalAlignment.Center
                 };
@@ -128,7 +126,7 @@ public class UIUpdater
     {
         foreach (var move in moves)
         {
-            if (move.From == 0) // Highlight bar slot
+            if (move.From == 0)
             {
                 var endPoint = gameBoard.FindName($"Point_{move.To}") as StackPanel;
                 if (endPoint != null) endPoint.Background = Brushes.LightGreen;
@@ -152,11 +150,9 @@ public class UIUpdater
     
     public void UpdateBearOffZones(Game game, Panel whiteBearOffZone, Panel blackBearOffZone)
     {
-        // Clear existing children in bear off zones
         whiteBearOffZone.Children.Clear();
         blackBearOffZone.Children.Clear();
-
-        // Render white checkers in the bear off zone
+        
         double whiteCheckerSize = whiteBearOffZone.ActualHeight * 0.9;
         for (int i = 0; i < 15 - game.Players[0].Checkers.Count; i++)
         {
@@ -165,12 +161,11 @@ public class UIUpdater
                 Width = whiteCheckerSize,
                 Height = whiteCheckerSize,
                 Fill = Brushes.White,
-                Margin = new Thickness(-whiteCheckerSize / 2, 0, 0, 0) // Overlap checkers by half
+                Margin = new Thickness(-whiteCheckerSize / 2, 0, 0, 0)
             };
             whiteBearOffZone.Children.Add(checkerUI);
         }
-
-        // Render black checkers in the bear off zone
+        
         double blackCheckerSize = blackBearOffZone.ActualHeight * 0.9;
         for (int i = 0; i < 15 - game.Players[1].Checkers.Count; i++)
         {
@@ -179,7 +174,7 @@ public class UIUpdater
                 Width = blackCheckerSize,
                 Height = blackCheckerSize,
                 Fill = Brushes.Black,
-                Margin = new Thickness(-blackCheckerSize / 2, 0, 0, 0) // Overlap checkers by half
+                Margin = new Thickness(-blackCheckerSize / 2, 0, 0, 0)
             };
             blackBearOffZone.Children.Add(checkerUI);
         }

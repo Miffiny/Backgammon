@@ -2,8 +2,8 @@
 
 public class Point
 {
-    public int Index { get; private set; }  // The unique identifier of the point (1-24)
-    public List<Checker> Checkers { get; private set; }  // A list of checkers currently on this point
+    public int Index { get; private set; } 
+    public List<Checker> Checkers { get; private set; }
 
     public Point(int index)
     {
@@ -29,7 +29,7 @@ public class Point
         return null!;
     }
 
-    // Property to get the owner of the point (null if empty, otherwise the color of the first checker)
+    // Property to get the owner of the point
     public CheckerColor? Owner => Checkers.Count > 0 ? Checkers[0].Color : null;
 
     // Property to check if the point is occupied by a single opponent's checker

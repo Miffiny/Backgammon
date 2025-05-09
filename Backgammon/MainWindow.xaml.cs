@@ -48,8 +48,7 @@ namespace Backgammon_UI
             {
                 // Get the clicked point index
                 int pointIndex = int.Parse(pointUI.Name.Split('_')[1]);
-
-                // Delegate the click handling to MainFrontend
+                
                 _mainFrontend.HandlePointClick(pointIndex);
             }
         }
@@ -64,7 +63,6 @@ namespace Backgammon_UI
                 // Check if the bar slot has a checker
                 if (barSlotUI.Children.Count > 0)
                 {
-                    // Delegate handling to MainFrontend
                     _mainFrontend.HandleBarSlotClick(barIndex);
                 }
             }
@@ -84,14 +82,12 @@ namespace Backgammon_UI
         {
             // Initialize MainFrontend with UI components
             _mainFrontend.Initialize(GameBoard, Dice1, Dice2, LastRoll1, LastRoll2, CurrentPlayer, RollDiceButton, WhiteBearOffZone, BlackBearOffZone);
-
-            // Populate the board with checkers
+            
             _mainFrontend.UpdateUI();
         }
 
         private void OnSizeChanged(object sender, SizeChangedEventArgs e)
         {
-            // Call UIUpdater through MainFrontend to dynamically resize checkers
             _mainFrontend.UpdateUI();
         }
         
@@ -164,7 +160,7 @@ namespace Backgammon_UI
                 GameConfigPanel.SetValue(Grid.ColumnSpanProperty,
                     (isPvP) ? 3 : 1); // Center if middle and right panels are hidden
 
-                GameConfigPanel.SetValue(Grid.ColumnProperty, 0); // Ensure it stays in first column
+                GameConfigPanel.SetValue(Grid.ColumnProperty, 0);
             }
         }
 

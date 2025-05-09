@@ -54,9 +54,9 @@ public class Game
     {
         for (int i = 0; i < count; i++)
         {
-            var checker = new Checker(player.Color, pointIndex);  // Create checker with player's color
-            player.AddChecker(checker);  // Add checker to player's list
-            Board.Points[pointIndex - 1].AddChecker(checker);  // Add checker to the respective point on the board
+            var checker = new Checker(player.Color, pointIndex);
+            player.AddChecker(checker); 
+            Board.Points[pointIndex - 1].AddChecker(checker);
         }
     }
     public void RollDice()
@@ -66,9 +66,8 @@ public class Game
     
     public List<(int From, int To)> GetBestMoveForCurrentPlayer()
     {
-        int[] diceValues = Dice.GetDiceValues(); // Get the current dice values
-
-        // Determine which AI instance to use based on the current player's color
+        int[] diceValues = Dice.GetDiceValues();
+        
         AI.AI currentAI = (CurrentPlayer.Color == CheckerColor.White) ? _whiteAI : _blackAI;
 
         // Call AI to get the best move sequence
@@ -257,13 +256,12 @@ public class Game
                     {
                         Point toPoint = Board.Points[toIndex - 1];
                         Checker checker = Board.RemoveFromBar(CurrentPlayer.Color);
-                        // Handle hitting an opponent's checker
+                        
                         if (toPoint.IsBlot(Players[currentPlayerIndex].Color))
                         {
                             Checker hitChecker = toPoint.RemoveChecker();
                             hitChecker.Position = 0; // Indicate that the checker is on the bar
-
-                            // Add the hit checker to the opponent's bar, not the current player’s
+                            
                             Board.AddToBar(hitChecker);
                         }
                         Board.Points[toIndex - 1].AddChecker(checker);
@@ -301,13 +299,11 @@ public class Game
         // Check if the player has checkers on the bar and restrict movement to entering in the opponent's home area
         if (CurrentPlayer.Color == CheckerColor.White)
         {
-            // White re-enters only in opponent's home board (points 1-6)
             if (toIndex < 1 || toIndex > 6)
             {
                 return false;
             }
-
-            // Ensure the destination matches the dice value for white
+            
             if (toIndex != diceValue)
             {
                 return false;
@@ -320,8 +316,7 @@ public class Game
             {
                 return false;
             }
-
-            // Ensure the destination matches the dice value for black
+            
             if (toIndex != 25 - diceValue)
             {
                 return false;
@@ -361,18 +356,16 @@ public class Game
         {
             return false;
         }
-
-        // Get dice values
+        
         int[] diceValues = Dice.GetDiceValues();
-
-        // Check if the srcIndex matches any dice value for bearing off directly
+        
         foreach (int diceValue in diceValues)
         {
-            if (CurrentPlayer.Color == CheckerColor.White && srcIndex == 24 - diceValue + 1) // Adjusted for white's range
+            if (CurrentPlayer.Color == CheckerColor.White && srcIndex == 24 - diceValue + 1)
             {
                 return true;
             }
-            if (CurrentPlayer.Color == CheckerColor.Black && srcIndex == diceValue) // Direct match for black
+            if (CurrentPlayer.Color == CheckerColor.Black && srcIndex == diceValue)
             {
                 return true;
             }
@@ -393,7 +386,7 @@ public class Game
                 {
                     if (point.Owner == CurrentPlayer.Color && point.Checkers.Count > 0)
                     {
-                        return false; // Higher index occupied by the current player
+                        return false;
                     }
                 }
             }
@@ -459,7 +452,7 @@ public class Game
 
     public void CheckForWinner()
     {
-        // Check if all checkers of the current player are borne off
+        // Check if all checkers of the current player are off the board
         bool allCheckersOffBoard = true;
 
         // Verify no checkers exist on the board

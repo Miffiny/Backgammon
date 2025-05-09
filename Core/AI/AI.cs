@@ -54,8 +54,6 @@ public class AI
         // Determine the baseline opponent bar count from the current board state.
         int baseOpponentBarCount = _board.GetBar(GetOpponent(_aiPlayer).Color).Count;
         
-        
-    
         // Sort uniqueStates so that states with a higher increase in the opponent's bar count are prioritized.
         uniqueStates = uniqueStates
             .OrderByDescending(state => state.GetBar(GetOpponent(_aiPlayer).Color).Count - baseOpponentBarCount)
@@ -108,7 +106,7 @@ public class AI
             }));
         }
 
-        Task.WaitAll(tasks.ToArray());
+        Task.WaitAll(tasks.Cast<Task>().ToArray());
 
         int totalValue = 0;
         int totalFrequency = 0;
@@ -199,7 +197,7 @@ public class AI
                 blackDistance += (i + 1) * point.Checkers.Count;
         }
 
-        // Apply evaluation factors independently to each player's score
+        // Applying evaluation factors independently to each player's score
         Player opponent = GetOpponent(currentPlayer);
         foreach (var factor in evaluationFactors)
         {
@@ -215,7 +213,7 @@ public class AI
             }
         }
 
-        // Return evaluation from current player's perspective
+        // Return evaluation from AI player's perspective
         return _aiPlayer.Color == CheckerColor.White
             ? blackDistance - whiteDistance
             : whiteDistance - blackDistance;
@@ -225,19 +223,16 @@ public class AI
     {
         int blotCount = 0;
         var points = board.Points;
-
-        // Efficiently count blots without LINQ or extra allocations
+        
         for (int i = 0; i < points.Length; i++)
         {
             var point = points[i];
             if (point.Checkers.Count == 1 && point.Checkers[0].Color == player.Color)
                 blotCount++;
         }
-
-        // Compute penalty factor (e.g., 1 blot => factor 0.9, 2 blots => factor 0.8)
+        
         double factor = 1.0 + blotCount * 0.02;
-
-        // Apply factor multiplicatively to current score
+        
         return (int)(currentScore * factor);
     }
     
@@ -253,7 +248,6 @@ public class AI
             if (point.Owner == player.Color && point.Checkers.Count >= 2)
             {
                 consecutiveBlocks++;
-                // Keep track of longest consecutive blocks
                 if (consecutiveBlocks > maxConsecutiveBlocks)
                     maxConsecutiveBlocks = consecutiveBlocks;
             }
@@ -264,7 +258,6 @@ public class AI
         }
 
         double factor = 1.0;
-        // Apply positive factor if there are at least 2 consecutive blocks
         if (maxConsecutiveBlocks >= 2)
         {
             factor = 1.0 - (0.05 * (maxConsecutiveBlocks - 1));
@@ -278,8 +271,7 @@ public class AI
         int start = player.Color == CheckerColor.White ? 18 : 0; // points 19-24 (White), 1-6 (Black)
 
         var points = board.Points;
-
-        // Efficiently iterate only over home board points
+        
         for (int i = start; i < start + 6; i++)
         {
             var point = points[i];
@@ -296,8 +288,7 @@ public class AI
     {
         var points = board.Points;
         int penaltyCount = 0;
-
-        // Count the number of checkers exceeding stack size of 5 per point
+        
         for (int i = 0; i < points.Length; i++)
         {
             var point = points[i];
@@ -373,7 +364,7 @@ public class AI
                     }
                 }
             }
-            return moves; // No other moves can occur until all checkers are re-entered
+            return moves;
         }
 
         // Generate moves for checkers on the board
@@ -424,7 +415,7 @@ public class AI
     
     public List<GameBoard> GenerateUniqueStates(GameBoard board, Player currentPlayer, int[] diceValues)
     {
-        var uniqueStates = new List<GameBoard>(); // Local to this method
+        var uniqueStates = new List<GameBoard>();
         var currentCallStates = new HashSet<string>(); // Track states added during this call
 
         void Recurse(GameBoard currentBoard, int[] remainingDice, List<(int From, int To)> currentMoves)
@@ -472,7 +463,7 @@ public class AI
         return uniqueStates;
     }
 
-    // Utility: Hash the board state for efficient uniqueness checking
+    // Utility: Hash the board state
     private string HashBoardState(GameBoard board)
     {
         var hashComponents = new List<string>();
@@ -491,7 +482,7 @@ public class AI
     
     private GameBoard SimulateMove(GameBoard board, Player currentPlayer, int src, int dst)
     {
-        // Clone the board with cloned players
+        // Clone the board
         GameBoard simulatedBoard = board.Clone();
 
         // Handle re-entering from the bar
@@ -552,7 +543,7 @@ public class AI
 
         for (int i = 1; i <= 6; i++)
         {
-            for (int j = i; j <= 6; j++) // j >= i to avoid duplicate permutations
+            for (int j = i; j <= 6; j++)
             {
                 if (i == j)
                 {
@@ -561,7 +552,6 @@ public class AI
                 }
                 else
                 {
-                    // Add a single combination for non-doubles
                     outcomes.Add(new[] { i, j });
                 }
             }
@@ -582,14 +572,14 @@ public class AI
             {
                 diceValue = dst; // White uses dice values directly matching the destination
             }
-            else // Black
+            else
             {
-                diceValue = 25 - dst; // Black uses 25 - destination to calculate the dice value
+                diceValue = 25 - dst;
             }
         }
         else
         {
-            diceValue = Math.Abs(dst - src); // Regular moves use absolute difference
+            diceValue = Math.Abs(dst - src);
         }
 
         // Remove the used dice value

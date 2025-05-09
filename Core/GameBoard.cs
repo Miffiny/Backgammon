@@ -2,9 +2,9 @@
 
 public class GameBoard
 {
-    public Point[] Points { get; private set; }  // An array of 24 points on the board
-    public List<Checker> WhiteBar { get; private set; } // White checkers on the bar
-    public List<Checker> BlackBar { get; private set; } // Black checkers on the bar
+    public Point[] Points { get; private set; } 
+    public List<Checker> WhiteBar { get; private set; }
+    public List<Checker> BlackBar { get; private set; }
 
     public GameBoard()
     {
@@ -61,7 +61,7 @@ public class GameBoard
         {
             BlackBar.Add(checker);
         }
-        checker.Position = 0; // Position 0 indicates the bar
+        checker.Position = 0;
     }
 
     // Remove a checker from the respective bar
@@ -93,26 +93,22 @@ public class GameBoard
     {
         if (fromIndex < 1 || fromIndex > 24 || toIndex < 1 || toIndex > 24)
         {
-            return; // Invalid move
+            return;
         }
 
         Point fromPoint = Points[fromIndex - 1];
         Point toPoint = Points[toIndex - 1];
-
-        // Remove the checker from the current point
+        
         Checker checker = fromPoint.RemoveChecker();
-
-        // Handle hitting an opponent's checker
+        
         if (toPoint.IsBlot(currentPlayer.Color))
         {
             Checker hitChecker = toPoint.RemoveChecker();
-            hitChecker.Position = 0; // Indicate that the checker is on the bar
-
-            // Add the hit checker to the opponent's bar, not the current player’s
+            hitChecker.Position = 0;
+            
             AddToBar(hitChecker);
         }
-
-        // Add the checker to the new point
+        
         toPoint.AddChecker(checker);
         checker.Position = toIndex;
     }

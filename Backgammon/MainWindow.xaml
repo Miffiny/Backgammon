@@ -62,7 +62,7 @@
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
-                <!-- Points 13 to 18 (no border needed) -->
+                <!-- Points 13 to 18 -->
                 <StackPanel Name="Point_13" Orientation="Vertical" Background="SaddleBrown" Grid.Column="0" />
                 <StackPanel Name="Point_14" Orientation="Vertical" Background="SaddleBrown" Grid.Column="1" />
                 <StackPanel Name="Point_15" Orientation="Vertical" Background="SaddleBrown" Grid.Column="2" />
@@ -70,7 +70,7 @@
                 <StackPanel Name="Point_17" Orientation="Vertical" Background="SaddleBrown" Grid.Column="4" />
                 <StackPanel Name="Point_18" Orientation="Vertical" Background="SaddleBrown" Grid.Column="5" />
 
-                <!-- Points 19 to 24 with a green border wrapping the group -->
+                <!-- Points 19 to 24 with a wrapping the group -->
                 <Border BorderBrush="WhiteSmoke" BorderThickness="2" Grid.Column="6" Grid.ColumnSpan="6">
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -133,7 +133,7 @@
                 <StackPanel Name="Point_8" Orientation="Vertical" Background="SaddleBrown" Grid.Column="4" />
                 <StackPanel Name="Point_7" Orientation="Vertical" Background="SaddleBrown" Grid.Column="5" />
 
-                <!-- Points 6 to 1 with a green border wrapping the group -->
+                <!-- Points 6 to 1 with a border wrapping the group -->
                 <Border BorderBrush="Black" BorderThickness="3" Grid.Column="6" Grid.ColumnSpan="6">
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -189,7 +189,7 @@
             <TextBlock Name="LastRoll1" Text="Last Roll 1: -" FontSize="18" Margin="5" />
             <TextBlock Name="LastRoll2" Text="Last Roll 2: -" FontSize="18" Margin="5" />
             
-            <!-- Roll Dice Button -->
+            <!-- Roll Dice, Stop, Resume -->
             
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                 <Button Name="RollDiceButton" Content="Roll Dice" FontSize="16" Margin="5" Width="100" Click="RollDiceButton_Click" />

@@ -14,11 +14,11 @@ public static class GameUtils
         // Enforce moving in the correct direction
         if (CurrentPlayer.Color == CheckerColor.White && toIndex <= fromIndex)
         {
-            return false;  // White moves forward (to higher indices)
+            return false;
         }
         if (CurrentPlayer.Color == CheckerColor.Black && toIndex >= fromIndex)
         {
-            return false;  // Black moves backward (to lower indices)
+            return false; 
         }
         
         return Board.IsMoveValid(CurrentPlayer, fromIndex, toIndex, diceValue);
@@ -26,16 +26,13 @@ public static class GameUtils
     
     public static bool IsValidBarMove(int toIndex, int diceValue, Player CurrentPlayer, GameBoard Board)
     {
-        // Check if the player has checkers on the bar and restrict movement to entering in the opponent's home area
         if (CurrentPlayer.Color == CheckerColor.White)
         {
-            // White re-enters only in opponent's home board (points 1-6)
             if (toIndex < 1 || toIndex > 6)
             {
                 return false;
             }
-
-            // Ensure the destination matches the dice value for white
+            
             if (toIndex != diceValue)
             {
                 return false;
@@ -43,20 +40,17 @@ public static class GameUtils
         }
         else if (CurrentPlayer.Color == CheckerColor.Black)
         {
-            // Black re-enters only in opponent's home board (points 19-24)
             if (toIndex < 19 || toIndex > 24)
             {
                 return false;
             }
-
-            // Ensure the destination matches the dice value for black
+            
             if (toIndex != 25 - diceValue)
             {
                 return false;
             }
         }
 
-        // Ensure the point is either empty or has only one opponent checker (blot)
         Point toPoint = Board.Points[toIndex - 1];
         return toPoint.Owner == CurrentPlayer.Color || toPoint.Owner == null || toPoint.IsBlot(CurrentPlayer.Color);
     }
@@ -64,7 +58,6 @@ public static class GameUtils
     public static bool CanBearOffFromIndex(int srcIndex, GameBoard Board, Player CurrentPlayer, int[] diceValues)
     {
         if (!CanBearOff(CurrentPlayer, Board, diceValues)) return false;
-        // Define home board indices and offset for white
         int[] homeBoardIndices = (CurrentPlayer.Color == CheckerColor.White) 
             ? [19, 20, 21, 22, 23, 24]
             : [1, 2, 3, 4, 5, 6];
@@ -83,11 +76,11 @@ public static class GameUtils
         // Check if the srcIndex matches any dice value for bearing off directly
         foreach (int diceValue in diceValues)
         {
-            if (CurrentPlayer.Color == CheckerColor.White && srcIndex == 24 - diceValue + 1) // Adjusted for white's range
+            if (CurrentPlayer.Color == CheckerColor.White && srcIndex == 24 - diceValue + 1)
             {
                 return true;
             }
-            if (CurrentPlayer.Color == CheckerColor.Black && srcIndex == diceValue) // Direct match for black
+            if (CurrentPlayer.Color == CheckerColor.Black && srcIndex == diceValue)
             {
                 return true;
             }
@@ -108,7 +101,7 @@ public static class GameUtils
                 {
                     if (point.Owner == CurrentPlayer.Color && point.Checkers.Count > 0)
                     {
-                        return false; // Higher index occupied by the current player
+                        return false;
                     }
                 }
             }
@@ -140,7 +133,7 @@ public static class GameUtils
             {
                 if (checker.Color == CurrentPlayer.Color && !homeBoardIndices.Contains(checker.Position))
                 {
-                    return false; // A checker is outside the home board
+                    return false;
                 }
             }
         }
@@ -151,62 +144,4 @@ public static class GameUtils
         }
         return false;
     }
-
-    
-    public static int[] GetAvailableEndPoints(int startIndex, Player CurrentPlayer, GameBoard Board, int[] diceValues)
-        {
-            var availableEndPoints = new List<int>();
-
-            if (startIndex == 0) // Bar index
-            {
-                foreach (int diceValue in diceValues)
-                {
-                    if (CurrentPlayer.Color == CheckerColor.White)
-                    {
-                        for (int toIndex = 1; toIndex <= 6; toIndex++)
-                        {
-                            if (IsValidBarMove(toIndex, diceValue, CurrentPlayer, Board))
-                            {
-                                availableEndPoints.Add(toIndex);
-                            }
-                        }
-                    }
-                    else if (CurrentPlayer.Color == CheckerColor.Black)
-                    {
-                        for (int toIndex = 19; toIndex <= 24; toIndex++)
-                        {
-                            if (IsValidBarMove(toIndex, diceValue, CurrentPlayer, Board))
-                            {
-                                availableEndPoints.Add(toIndex);
-                            }
-                        }
-                    }
-                }
-            }
-            else
-            {
-                var startPoint = Board.Points[startIndex - 1];
-                if (startPoint.Owner != CurrentPlayer.Color)
-                {
-                    return availableEndPoints.ToArray();
-                }
-                
-                foreach (int diceValue in diceValues)
-                {
-                    int forwardIndex = startIndex + diceValue;
-                    int backwardIndex = startIndex - diceValue;
-
-                    if (IsMoveValid(startIndex, forwardIndex, diceValue, CurrentPlayer, Board))
-                    {
-                        availableEndPoints.Add(forwardIndex);
-                    }
-
-                    if (IsMoveValid(startIndex, backwardIndex, diceValue, CurrentPlayer, Board))
-                    {
-                        availableEndPoints.Add(backwardIndex);
-                    }
-                }
-            }
-            return availableEndPoints.ToArray();
-        }
 }

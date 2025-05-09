@@ -82,7 +82,7 @@ public class GameController
         if (_gameMode == GameMode.PlayerVsPlayer || 
             (_gameMode == GameMode.PlayerVsAI && IsHumanTurn()))
         {
-            // Wait for player input (handled by MainFrontend)
+            // Wait for player input
             return;
         }
         
@@ -92,7 +92,6 @@ public class GameController
             await _resumeTcs.Task; // Wait until resume is called
         }
         
-        // Prevent re-triggering AI calculations while it's still processing
         if (_isAIProcessing) return;
         _isAIProcessing = true;
 
@@ -147,8 +146,8 @@ public class GameController
         bool moveSuccess = _game.MakeMove(fromIndex, toIndex);
         if (moveSuccess)
         {
-            LastMovesBuffer.Add((fromIndex, toIndex)); // Track the move
-            // If no further moves are available, schedule EndTurn asynchronously
+            LastMovesBuffer.Add((fromIndex, toIndex));
+
             if (!_game.HasAvailableMoves())
             {
                 EndTurn();
